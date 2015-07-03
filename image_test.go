@@ -15,13 +15,13 @@ import (
 type tUnknown struct {
 	MemPMagic string // MemP
 	Rect      image.Rectangle
-	Channels  int
-	DataType  reflect.Kind
-	Pix       PixSilce
+	_Channels int
+	_DataType reflect.Kind
+	Pix       []float32
 
 	// Stride is the Pix stride (in bytes, must align with PixelSize)
 	// between vertically adjacent pixels.
-	Stride int
+	_Stride int
 }
 
 func (p *tUnknown) Equal(q *Image) bool {
@@ -31,16 +31,16 @@ func (p *tUnknown) Equal(q *Image) bool {
 	if p.Rect != q.Rect {
 		return false
 	}
-	if p.Channels != q.Channels {
+	if p._Channels != q.Channels {
 		return false
 	}
-	if p.DataType != q.DataType {
+	if p._DataType != q.DataType {
 		return false
 	}
-	if !bytes.Equal(p.Pix, q.Pix) {
+	if !bytes.Equal(AsPixSilce(p.Pix), q.Pix) {
 		return false
 	}
-	if p.Stride != q.Stride {
+	if p._Stride != q.Stride {
 		return false
 	}
 	return true
