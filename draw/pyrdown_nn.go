@@ -10,7 +10,7 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func PyrDown_NearestNeighbor(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func _PyrDown_NearestNeighbor(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	draw.NearestNeighbor.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),

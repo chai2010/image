@@ -37,7 +37,8 @@ type nnScaler struct{}
 
 func (nnScaler) Scale(dst draw.Image, dr image.Rectangle, src image.Image, sr image.Rectangle) {
 	if dr.In(dst.Bounds()) && sr.In(src.Bounds()) && sr.Dx() == dr.Dx()*2 && sr.Dy() == dr.Dy()*2 {
-		// fast case
+		_PyrDown_NearestNeighbor(dst, dr, src, sr.Min)
+		return
 	}
 	xdraw.NearestNeighbor.Scale(
 		dst, dr, src, sr,
