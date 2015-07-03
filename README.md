@@ -1,10 +1,10 @@
-# MemP: Memory Picture
+# Image: Memory Picture
 
 MemP Image Spec (Native Endian):
 
 ```Go
 type Image struct {
-	MemPMagic string // MemP
+	MemPMagic string // MemP, see https://github.com/chai2010/memp
 	Rect      image.Rectangle
 	Channels  int
 	DataType  reflect.Kind
@@ -16,12 +16,12 @@ type Image struct {
 }
 ```
 
-PkgDoc: [http://godoc.org/github.com/chai2010/memp](http://godoc.org/github.com/chai2010/memp)
+PkgDoc: [http://godoc.org/github.com/chai2010/image](http://godoc.org/github.com/chai2010/image)
 
 Install
 =======
 
-1. `go get github.com/chai2010/memp`
+1. `go get github.com/chai2010/image`
 2. `go run hello.go`
 
 

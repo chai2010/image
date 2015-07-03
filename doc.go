@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package memp define a Memory format picture.
+// Package image define a Memory format picture.
 //
 // MemP Image Structs (Native Endian):
 //	type Image struct {
@@ -20,4 +20,4 @@
 // Please report bugs to chaishushan{AT}gmail.com.
 //
 // Thanks!
-package memp
+package image
