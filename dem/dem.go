@@ -8,6 +8,8 @@ import (
 	"image"
 	"image/color"
 	"reflect"
+
+	memp "github.com/chai2010/image"
 )
 
 const (
@@ -18,15 +20,15 @@ var (
 	_ image.Image = (*Dem)(nil)
 )
 
-type Dem Image // Dem is NewImage(r, 1, reflect.Float32 type)
+type Dem memp.Image // Dem is NewImage(r, 1, reflect.Float32 type)
 
 func NewDem(r image.Rectangle) *Dem {
-	m := NewImage(r, 1, reflect.Float32)
+	m := memp.NewImage(r, 1, reflect.Float32)
 	return (*Dem)(m)
 }
 
 func AsDem(m interface{}) (p *Dem, ok bool) {
-	if x, ok := AsMemPImage(m); ok {
+	if x, ok := memp.AsMemPImage(m); ok {
 		if x.Channels == 1 && x.DataType == reflect.Float32 {
 			return (*Dem)(x), true
 		}
@@ -46,11 +48,11 @@ func (p *Dem) Bounds() image.Rectangle {
 }
 
 func (p *Dem) ColorModel() color.Model {
-	return ColorModel(p.Channels, p.DataType)
+	return memp.ColorModel(p.Channels, p.DataType)
 }
 
 func (p *Dem) At(x, y int) color.Color {
-	return (*Image)(p).At(x, y)
+	return (*memp.Image)(p).At(x, y)
 }
 
 func (p *Dem) ValueAt(x, y int) float32 {
@@ -58,12 +60,12 @@ func (p *Dem) ValueAt(x, y int) float32 {
 		return 0
 	}
 	i := p.PixOffset(x, y)
-	n := SizeofPixel(p.Channels, p.DataType)
+	n := memp.SizeofPixel(p.Channels, p.DataType)
 	return (p.Pix[i:][:n]).Float32s()[0]
 }
 
 func (p *Dem) Set(x, y int, c color.Color) {
-	(*Image)(p).Set(x, y, c)
+	(*memp.Image)(p).Set(x, y, c)
 }
 
 func (p *Dem) SetValue(x, y int, c float32) {
@@ -71,18 +73,18 @@ func (p *Dem) SetValue(x, y int, c float32) {
 		return
 	}
 	i := p.PixOffset(x, y)
-	n := SizeofPixel(p.Channels, p.DataType)
+	n := memp.SizeofPixel(p.Channels, p.DataType)
 	(p.Pix[i:][:n]).Float32s()[i] = c
 }
 
 func (p *Dem) PixOffset(x, y int) int {
-	return (y-p.Rect.Min.Y)*p.Stride + (x-p.Rect.Min.X)*SizeofPixel(p.Channels, p.DataType)
+	return (y-p.Rect.Min.Y)*p.Stride + (x-p.Rect.Min.X)*memp.SizeofPixel(p.Channels, p.DataType)
 }
 
 func (p *Dem) SubDem(r image.Rectangle) *Dem {
-	return (*Dem)((*Image)(p).SubImage(r).(*Image))
+	return (*Dem)((*memp.Image)(p).SubImage(r).(*memp.Image))
 }
 
 func (p *Dem) StdImage() image.Image {
-	return (*Image)(p).StdImage()
+	return (*memp.Image)(p).StdImage()
 }
