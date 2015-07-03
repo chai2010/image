@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package memp
+package draw
 
 import (
 	"image"
@@ -12,8 +12,46 @@ import (
 	xdraw "golang.org/x/image/draw"
 )
 
+var (
+	// NearestNeighbor is the nearest neighbor interpolator. It is very fast,
+	// but usually gives very low quality results. When scaling up, the result
+	// will look 'blocky'.
+	NearestNeighbor = PyrDowner(nnPyrDowner{})
+
+	// ApproxBiLinear is a mixture of the nearest neighbor and bi-linear
+	// interpolators. It is fast, but usually gives medium quality results.
+	//
+	// It implements bi-linear interpolation when upscaling and a bi-linear
+	// blend of the 4 nearest neighbor pixels when downscaling. This yields
+	// nicer quality than nearest neighbor interpolation when upscaling, but
+	// the time taken is independent of the number of source pixels, unlike the
+	// bi-linear interpolator. When downscaling a large image, the performance
+	// difference can be significant.
+	ApproxBiLinear = PyrDowner(abPyrDowner{})
+)
+
 type PyrDowner interface {
 	PyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point)
+}
+
+func Draw(dst xdraw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+	// TODO
+}
+
+type nnPyrDowner struct{}
+
+func (nnPyrDowner) PyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+	xdraw.NearestNeighbor.Scale(
+		dst, r,
+		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()*2, sp.Y+r.Dy()*2),
+		xdraw.Src, nil,
+	)
+}
+
+type abPyrDowner struct{}
+
+func (abPyrDowner) PyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+	_PyrDown_ApproxBiLinear(dst, r, src, sp)
 }
 
 func _PyrDown_ApproxBiLinear_Gray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image.Point) {
@@ -336,7 +374,7 @@ func _PyrDown_ApproxBiLinear_RGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, 
 	)
 }
 
-func PyrDown_ApproxBiLinear(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func _PyrDown_ApproxBiLinear(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	switch dst := dst.(type) {
 	case *image.Gray:
 		switch src := src.(type) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package memp
+package draw
 
 import (
 	"image"
@@ -12,19 +12,19 @@ import (
 	"os"
 	"testing"
 
-	"golang.org/x/image/draw"
+	xdraw "golang.org/x/image/draw"
 )
 
 func TestPyrDown_gray(t *testing.T) {
-	src := tToGray(tLoadImage("./testdata/lena.png"))
+	src := tToGray(tLoadImage("../testdata/lena.png"))
 
 	dst0 := image.NewGray(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 	dst1 := image.NewGray(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 
-	draw.ApproxBiLinear.Scale(
+	xdraw.ApproxBiLinear.Scale(
 		dst0, dst0.Bounds(),
 		src, src.Bounds(),
-		draw.Src, nil,
+		xdraw.Src, nil,
 	)
 	_PyrDown_ApproxBiLinear_Gray_Gray(
 		dst1, dst1.Bounds(),
@@ -49,15 +49,15 @@ func TestPyrDown_gray(t *testing.T) {
 }
 
 func TestPyrDown_gray16(t *testing.T) {
-	src := tToGray16(tLoadImage("./testdata/lena.png"))
+	src := tToGray16(tLoadImage("../testdata/lena.png"))
 
 	dst0 := image.NewGray16(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 	dst1 := image.NewGray16(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 
-	draw.ApproxBiLinear.Scale(
+	xdraw.ApproxBiLinear.Scale(
 		dst0, dst0.Bounds(),
 		src, src.Bounds(),
-		draw.Src, nil,
+		xdraw.Src, nil,
 	)
 	_PyrDown_ApproxBiLinear_Gray16_Gray16(
 		dst1, dst1.Bounds(),
@@ -82,15 +82,15 @@ func TestPyrDown_gray16(t *testing.T) {
 }
 
 func TestPyrDown_rgba(t *testing.T) {
-	src := tToRGBA(tLoadImage("./testdata/lena.png"))
+	src := tToRGBA(tLoadImage("../testdata/lena.png"))
 
 	dst0 := image.NewRGBA(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 	dst1 := image.NewRGBA(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 
-	draw.ApproxBiLinear.Scale(
+	xdraw.ApproxBiLinear.Scale(
 		dst0, dst0.Bounds(),
 		src, src.Bounds(),
-		draw.Src, nil,
+		xdraw.Src, nil,
 	)
 	_PyrDown_ApproxBiLinear_RGBA_RGBA(
 		dst1, dst1.Bounds(),
@@ -115,15 +115,15 @@ func TestPyrDown_rgba(t *testing.T) {
 }
 
 func TestPyrDown_rgba64(t *testing.T) {
-	src := tToRGBA64(tLoadImage("./testdata/lena.png"))
+	src := tToRGBA64(tLoadImage("../testdata/lena.png"))
 
 	dst0 := image.NewRGBA64(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 	dst1 := image.NewRGBA64(image.Rect(0, 0, src.Bounds().Dx()/2, src.Bounds().Dy()/2))
 
-	draw.ApproxBiLinear.Scale(
+	xdraw.ApproxBiLinear.Scale(
 		dst0, dst0.Bounds(),
 		src, src.Bounds(),
-		draw.Src, nil,
+		xdraw.Src, nil,
 	)
 	_PyrDown_ApproxBiLinear_RGBA64_RGBA64(
 		dst1, dst1.Bounds(),
@@ -166,7 +166,7 @@ func tToGray(m image.Image) *image.Gray {
 		return p
 	}
 	p := image.NewGray(m.Bounds())
-	draw.Draw(p, p.Bounds(), m, image.Pt(0, 0), draw.Src)
+	xdraw.Draw(p, p.Bounds(), m, image.Pt(0, 0), xdraw.Src)
 	return p
 }
 
@@ -175,7 +175,7 @@ func tToGray16(m image.Image) *image.Gray16 {
 		return p
 	}
 	p := image.NewGray16(m.Bounds())
-	draw.Draw(p, p.Bounds(), m, image.Pt(0, 0), draw.Src)
+	xdraw.Draw(p, p.Bounds(), m, image.Pt(0, 0), xdraw.Src)
 	return p
 }
 
@@ -184,7 +184,7 @@ func tToRGBA(m image.Image) *image.RGBA {
 		return p
 	}
 	p := image.NewRGBA(m.Bounds())
-	draw.Draw(p, p.Bounds(), m, image.Pt(0, 0), draw.Src)
+	xdraw.Draw(p, p.Bounds(), m, image.Pt(0, 0), xdraw.Src)
 	return p
 }
 
@@ -193,6 +193,6 @@ func tToRGBA64(m image.Image) *image.RGBA64 {
 		return p
 	}
 	p := image.NewRGBA64(m.Bounds())
-	draw.Draw(p, p.Bounds(), m, image.Pt(0, 0), draw.Src)
+	xdraw.Draw(p, p.Bounds(), m, image.Pt(0, 0), xdraw.Src)
 	return p
 }
