@@ -34,10 +34,6 @@ type PyrDowner interface {
 	PyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point)
 }
 
-func Draw(dst xdraw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// TODO
-}
-
 type nnPyrDowner struct{}
 
 func (nnPyrDowner) PyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {

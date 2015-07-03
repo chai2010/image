@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build ingore
-
-package memp
+package big
 
 import (
 	"fmt"
 	"image"
 	"image/color"
-	"image/draw"
 	"sync"
 
-	xdraw "golang.org/x/image/draw"
+	"github.com/chai2010/image/draw"
 )
 
 type SubImager interface {
@@ -22,14 +19,21 @@ type SubImager interface {
 }
 
 type BigImage struct {
-	PyrDowner    PyrDowner
+	PyrDowner    draw.PyrDowner
 	Rect         image.Rectangle
 	TileSize     image.Point
 	TileMap      [][][]draw.Image // m.TileMap[level][col][row]
 	TileMapMutex sync.Mutex
 }
 
-func NewBigImage(r image.Rectangle, tileSize image.Point, op PyrDowner) *BigImage {
+func maxInt(a, b int) int {
+	if a >= b {
+		return a
+	}
+	return b
+}
+
+func NewBigImage(r image.Rectangle, tileSize image.Point, op draw.PyrDowner) *BigImage {
 	makeImageTileMap := func(r image.Rectangle, tileSize image.Point) (tileMap [][][]draw.Image) {
 		xLevels := 0
 		for i := 0; ; i++ {
@@ -109,17 +113,6 @@ func (p *BigImage) Set(x, y int, c color.Color) {
 	}
 	level, col, row := p.Levels()-1, x/p.TileSize.X, y/p.TileSize.Y
 	p.GetTile(level, col, row).Set(x%p.TileSize.X, y%p.TileSize.Y, c)
-	if p.TileEdgeOverlap {
-		if x > 0 && y > 0 && x%p.TileSize.X == 0 && y%p.TileSize.Y == 0 {
-			p.GetTile(level, col-1, row-1).Set(p.TileSize.X, p.TileSize.Y, c)
-		}
-		if x > 0 && x%p.TileSize.X == 0 {
-			p.GetTile(level, col-1, row).Set(p.TileSize.X, y%p.TileSize.Y, c)
-		}
-		if y > 0 && y%p.TileSize.Y == 0 {
-			p.GetTile(level, col, row-1).Set(x%p.TileSize.X, p.TileSize.Y, c)
-		}
-	}
 	return
 }
 
@@ -146,7 +139,7 @@ func (p *BigImage) TilesDown(level int) int {
 	return v
 }
 
-func (p *BigImage) GetTile(level, col, row int) (m draw.BigImage) {
+func (p *BigImage) GetTile(level, col, row int) (m draw.Image) {
 	p.TileMapMutex.Lock()
 	defer p.TileMapMutex.Unlock()
 	level = p.adjustLevel(level)
