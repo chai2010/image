@@ -7,6 +7,7 @@ package draw
 import (
 	"image"
 	"image/color"
+	"image/draw"
 
 	xdraw "golang.org/x/image/draw"
 )
@@ -14,6 +15,10 @@ import (
 type Image interface {
 	image.Image
 	Set(x, y int, c color.Color)
+}
+
+type Drawer interface {
+	Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point)
 }
 
 func Draw(dst Image, r image.Rectangle, src image.Image, sp image.Point) {
