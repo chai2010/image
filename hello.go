@@ -14,7 +14,7 @@ import (
 	"log"
 	"reflect"
 
-	memp "."
+	ximage "."
 )
 
 type BGR struct {
@@ -39,12 +39,12 @@ func main() {
 
 	// copy to BGR48 format image
 	b := m0.Bounds()
-	rgbImage := memp.NewImage(b, 3, reflect.Uint16)
+	rgbImage := ximage.NewImage(b, 3, reflect.Uint16)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.Pix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.Stride]
-			rgbSlice []BGR  = memp.PixSilce(line).Slice(reflect.TypeOf([]BGR(nil))).([]BGR)
+			rgbSlice []BGR  = ximage.PixSilce(line).Slice(reflect.TypeOf([]BGR(nil))).([]BGR)
 		)
 
 		for x, _ := range rgbSlice {

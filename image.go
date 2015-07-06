@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	MemPMagic = "MemP" // See https://github.com/chai2010/memp
+	MemPMagic = "MemP" // See https://github.com/chai2010/image
 )
 
 const (
@@ -26,7 +26,7 @@ var (
 	_ image.Image = (*Image)(nil)
 )
 
-// MemP Image Spec (Native Endian), see https://github.com/chai2010/memp.
+// MemP Image Spec (Native Endian), see https://github.com/chai2010/image.
 type Image struct {
 	MemPMagic string // MemP
 	Rect      image.Rectangle

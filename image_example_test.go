@@ -5,24 +5,90 @@
 package image_test
 
 import (
+	"fmt"
 	"image"
+	"image/color"
 	"reflect"
 
-	memp "."
+	ximage "."
 )
 
-func Example_rgb() {
+func ExamplePixSilce() {
+	a := []int32{101, 102, 103}
+	b := ximage.AsPixSilce(a)
+
+	b.Int32s()[0] = 12345
+	fmt.Printf("len(b) = %d\n", len(b))
+	fmt.Printf("b.Int32s() = %v\n", b.Int32s())
+	// Output:
+	// len(b) = 12
+	// b.Int32s() = [12345 102 103]
+}
+
+func ExampleColor() {
+	c := ximage.Color{
+		Channels: 4,
+		DataType: reflect.Uint8,
+		Pix:      []byte{101, 102, 103, 104},
+	}
+	rgba := color.RGBAModel.Convert(c).(color.RGBA)
+	fmt.Printf("rgba = %v\n", rgba)
+	// Output:
+	// rgba = {101 102 103 104}
+}
+
+func ExampleColorModel() {
+	rgba := color.RGBA{R: 101, G: 102, B: 103, A: 104}
+	c := ximage.ColorModel(4, reflect.Uint8).Convert(rgba).(ximage.Color)
+	fmt.Printf("c = %v\n", c)
+	// Output:
+	// c = {4 uint8 [101 102 103 104]}
+}
+
+func ExampleSizeofKind() {
+	fmt.Printf("%v = %v\n", reflect.Uint8, ximage.SizeofKind(reflect.Uint8))
+	fmt.Printf("%v = %v\n", reflect.Uint16, ximage.SizeofKind(reflect.Uint16))
+	fmt.Printf("%v = %v\n", reflect.Uint32, ximage.SizeofKind(reflect.Uint32))
+	fmt.Printf("%v = %v\n", reflect.Float32, ximage.SizeofKind(reflect.Float32))
+	fmt.Printf("%v = %v\n", reflect.Float64, ximage.SizeofKind(reflect.Float64))
+	// Output:
+	// uint8 = 1
+	// uint16 = 2
+	// uint32 = 4
+	// float32 = 4
+	// float64 = 8
+}
+
+func ExampleSizeofPixel() {
+	fmt.Printf("sizeof(gray) = %d\n", ximage.SizeofPixel(1, reflect.Uint8))
+	fmt.Printf("sizeof(gray16) = %d\n", ximage.SizeofPixel(1, reflect.Uint16))
+	fmt.Printf("sizeof(rgb) = %d\n", ximage.SizeofPixel(3, reflect.Uint8))
+	fmt.Printf("sizeof(rgb48) = %d\n", ximage.SizeofPixel(3, reflect.Uint16))
+	fmt.Printf("sizeof(rgba) = %d\n", ximage.SizeofPixel(4, reflect.Uint8))
+	fmt.Printf("sizeof(rgba64) = %d\n", ximage.SizeofPixel(4, reflect.Uint16))
+	fmt.Printf("sizeof(float32) = %d\n", ximage.SizeofPixel(1, reflect.Float32))
+	// Output:
+	// sizeof(gray) = 1
+	// sizeof(gray16) = 2
+	// sizeof(rgb) = 3
+	// sizeof(rgb48) = 6
+	// sizeof(rgba) = 4
+	// sizeof(rgba64) = 8
+	// sizeof(float32) = 4
+}
+
+func ExampleImage_rgb() {
 	type RGB struct {
 		R, G, B uint8
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := memp.NewImage(b, 3, reflect.Uint8)
+	rgbImage := ximage.NewImage(b, 3, reflect.Uint8)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.Pix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.Stride]
-			rgbSlice []RGB  = memp.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
@@ -35,18 +101,18 @@ func Example_rgb() {
 	}
 }
 
-func Example_rgb48() {
+func ExampleImage_rgb48() {
 	type RGB struct {
 		R, G, B uint16
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := memp.NewImage(b, 3, reflect.Uint16)
+	rgbImage := ximage.NewImage(b, 3, reflect.Uint16)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.Pix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.Stride]
-			rgbSlice []RGB  = memp.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
@@ -59,8 +125,8 @@ func Example_rgb48() {
 	}
 }
 
-func Example_unsafe() {
-	// struct must same as memp.Image
+func ExampleImage_unsafe() {
+	// struct must same as ximage.Image
 	type MyImage struct {
 		MemPMagic string // MemP
 		Rect      image.Rectangle
@@ -74,14 +140,14 @@ func Example_unsafe() {
 	}
 
 	p := &MyImage{
-		MemPMagic: memp.MemPMagic,
+		MemPMagic: ximage.MemPMagic,
 		Rect:      image.Rect(0, 0, 300, 400),
 		Channels:  3,
 		DataType:  reflect.Uint16,
-		Pix:       make([]byte, 300*400*3*memp.SizeofKind(reflect.Uint16)),
-		Stride:    300 * 3 * memp.SizeofKind(reflect.Uint16),
+		Pix:       make([]byte, 300*400*3*ximage.SizeofKind(reflect.Uint16)),
+		Stride:    300 * 3 * ximage.SizeofKind(reflect.Uint16),
 	}
 
-	q, _ := memp.AsMemPImage(p)
+	q, _ := ximage.AsMemPImage(p)
 	_ = q
 }
