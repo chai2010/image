@@ -5,101 +5,110 @@
 package big
 
 import (
-	"image"
-	"image/color"
-	"image/draw"
-	"reflect"
-
-	xdraw "github.com/chai2010/image/draw"
+	"io"
+	"os"
 )
 
-var (
-	_ Driver     = (*File)(nil)
-	_ draw.Image = (*File)(nil)
-)
-
-// File is a simple big image base on the local file system.
-type File struct {
-	filename string
-	rect     image.Rectangle
-	channels int
-	dataType reflect.Kind
-	pyramid  *Pyramid
+// File is a readable, writable sequence of bytes.
+//
+// Typically, it will be an *os.File, but test code may choose to substitute
+// memory-backed implementations.
+type File interface {
+	io.Closer
+	io.Reader
+	io.ReaderAt
+	io.Writer
+	Stat() (os.FileInfo, error)
+	Sync() error
 }
 
-func OpenFile(filename string) (f *File, err error) {
-	return
+// FileSystem is a namespace for files.
+//
+// The names are filepath names: they may be / separated or \ separated,
+// depending on the underlying operating system.
+type FileSystem interface {
+	// Create creates the named file for writing, truncating it if it already
+	// exists.
+	Create(name string) (File, error)
+
+	// Open opens the named file for reading.
+	Open(name string) (File, error)
+
+	// Remove removes the named file or directory.
+	Remove(name string) error
+
+	// Rename renames a file. It overwrites the file at newname if one exists,
+	// the same as os.Rename.
+	Rename(oldname, newname string) error
+
+	// MkdirAll creates a directory and all necessary parents. The permission
+	// bits perm have the same semantics as in os.MkdirAll. If the directory
+	// already exists, MkdirAll does nothing and returns nil.
+	MkdirAll(dir string, perm os.FileMode) error
+
+	// Lock locks the given file, creating the file if necessary, and
+	// truncating the file if it already exists. The lock is an exclusive lock
+	// (a write lock), but locked files should neither be read from nor written
+	// to. Such files should have zero size and only exist to co-ordinate
+	// ownership across processes.
+	//
+	// A nil Closer is returned if an error occurred. Otherwise, close that
+	// Closer to release the lock.
+	//
+	// On Linux and OSX, a lock has the same semantics as fcntl(2)'s advisory
+	// locks.  In particular, closing any other file descriptor for the same
+	// file will release the lock prematurely.
+	//
+	// Attempting to lock a file that is already locked by the current process
+	// has undefined behavior.
+	//
+	// Lock is not yet implemented on other operating systems, and calling it
+	// will return an error.
+	Lock(name string) (io.Closer, error)
+
+	// List returns a listing of the given directory. The names returned are
+	// relative to dir.
+	List(dir string) ([]string, error)
+
+	// Stat returns an os.FileInfo describing the named file.
+	Stat(name string) (os.FileInfo, error)
 }
 
-func CreateFile(filename string, imageSize image.Point, tileSize image.Point) (f *File, err error) {
-	return
+// DefaultFileSystem is a FileSystem implementation backed by the underlying
+// operating system's file system.
+var DefaultFileSystem FileSystem = defFS{}
+
+type defFS struct{}
+
+func (defFS) Create(name string) (File, error) {
+	return os.Create(name)
 }
 
-func (f *File) Close() error {
-	panic("TODO")
+func (defFS) Open(name string) (File, error) {
+	return os.Open(name)
 }
 
-func (f *File) Channels() int {
-	panic("TODO")
-}
-func (f *File) DataType() reflect.Kind {
-	panic("TODO")
+func (defFS) Remove(name string) error {
+	return os.Remove(name)
 }
 
-func (f *File) Levels() int {
-	panic("TODO")
+func (defFS) Rename(oldname, newname string) error {
+	return os.Rename(oldname, newname)
 }
 
-func (f *File) SubLevels(levels int) *Pyramid {
-	panic("TODO")
+func (defFS) MkdirAll(dir string, perm os.FileMode) error {
+	return os.MkdirAll(dir, perm)
 }
 
-func (f *File) TilesAcross(level int) int {
-	panic("TODO")
-}
-func (f *File) TilesDown(level int) int {
-	panic("TODO")
-}
-
-func (f *File) Bounds() image.Rectangle {
-	panic("TODO")
-}
-func (f *File) ColorModel() color.Model {
-	panic("TODO")
+func (defFS) List(dir string) ([]string, error) {
+	f, err := os.Open(dir)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return f.Readdirnames(-1)
 }
 
-func (f *File) At(x, y int) color.Color {
-	panic("TODO")
-}
-func (f *File) Set(x, y int, c color.Color) {
-	panic("TODO")
-}
-
-func (f *File) SelectByRect(level int, r image.Rectangle) (levelList, colList, rowList []int) {
-	panic("TODO")
-}
-
-func (f *File) ReadRect(dst draw.Image, r image.Rectangle, level int) (err error) {
-	panic("TODO")
-}
-
-func (f *File) WriteRect(m image.Image, r image.Rectangle, level int) (err error) {
-	panic("TODO")
-}
-
-func (f *File) GetTile(level, col, row int) (draw.Image, error) {
-	panic("TODO")
-}
-func (f *File) SetTile(level, col, row int, tile image.Image) error {
-	panic("TODO")
-}
-func (f *File) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	xdraw.Draw(dst, r, src, sp)
-}
-func (f *File) Scale(dst draw.Image, dr image.Rectangle, src image.Image, sr image.Rectangle) {
-	xdraw.ApproxBiLinear.Scale(dst, dr, src, sr)
-}
-
-func (f *File) Flush() error {
-	panic("TODO")
+func (defFS) Stat(name string) (os.FileInfo, error) {
+	return os.Stat(name)
 }
