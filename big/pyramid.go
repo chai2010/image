@@ -21,7 +21,7 @@ type Pyramid struct {
 	Driver    Driver
 }
 
-func NewPyramid(imageSize image.Point, tileSize image.Point, driver Driver) *Pyramid {
+func NewPyramid(imageSize, tileSize image.Point, driver Driver) *Pyramid {
 	if v := imageSize; v.X <= 0 || v.Y <= 0 {
 		panicf("big: NewPyramid, imageSize = %v", imageSize)
 	}

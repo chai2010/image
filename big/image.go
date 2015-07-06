@@ -27,11 +27,11 @@ type Image struct {
 	pyramid  *Pyramid
 }
 
-func OpenImage(fs FileSystem, filename string) (p *Image, err error) {
+func Open(fs FileSystem, name string) (p *Image, err error) {
 	return
 }
 
-func CreateImage(fs FileSystem, filename string, imageSize image.Point, tileSize image.Point) (p *Image, err error) {
+func Create(fs FileSystem, name string, imageSize, tileSize image.Point, channels int, dataType reflect.Kind) (p *Image, err error) {
 	return
 }
 
