@@ -12,7 +12,7 @@ import (
 	xdraw "github.com/chai2010/image/draw"
 )
 
-type Driver interface {
+type PyramidDriver interface {
 	Channels() int
 	DataType() reflect.Kind
 	GetTile(level, col, row int) (draw.Image, error)

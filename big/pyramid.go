@@ -18,10 +18,10 @@ import (
 type Pyramid struct {
 	ImageSize []image.Point // [0] is top
 	TileSize  image.Point
-	Driver    Driver
+	Driver    PyramidDriver
 }
 
-func NewPyramid(imageSize, tileSize image.Point, driver Driver) *Pyramid {
+func NewPyramid(imageSize, tileSize image.Point, driver PyramidDriver) *Pyramid {
 	if v := imageSize; v.X <= 0 || v.Y <= 0 {
 		panicf("big: NewPyramid, imageSize = %v", imageSize)
 	}

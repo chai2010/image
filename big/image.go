@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	_ Driver     = (*Image)(nil)
-	_ draw.Image = (*Image)(nil)
+	_ draw.Image    = (*Image)(nil)
+	_ PyramidDriver = (*Image)(nil)
 )
 
 // Image is a simple big image base on the local file system.
