@@ -12,7 +12,7 @@
 //		DataType     reflect.Kind
 //		Pix          PixSilce
 //
-//		// Stride is the Pix stride (in bytes)
+//		// Stride is the Pix stride (in bytes, must align with SizeofKind(p.DataType))
 //		// between vertically adjacent pixels.
 //		Stride int
 //	}
