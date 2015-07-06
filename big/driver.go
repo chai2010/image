@@ -6,9 +6,10 @@ package big
 
 import (
 	"image"
+	"image/draw"
 	"reflect"
 
-	"github.com/chai2010/image/draw"
+	xdraw "github.com/chai2010/image/draw"
 )
 
 type Driver interface {
@@ -16,6 +17,6 @@ type Driver interface {
 	DataType() reflect.Kind
 	GetTile(level, col, row int) (draw.Image, error)
 	SetTile(level, col, row int, tile image.Image) error
-	draw.Drawer
-	draw.Scaler
+	xdraw.Drawer
+	xdraw.Scaler
 }

@@ -11,25 +11,25 @@ import (
 	"image/draw"
 	"sync"
 
-	memp "github.com/chai2010/image"
+	ximage "github.com/chai2010/image"
 	xdraw "github.com/chai2010/image/draw"
 )
 
-type Image struct {
+type Pyramid struct {
 	ImageSize []image.Point // [0] is top
 	TileSize  image.Point
 	Driver    Driver
 }
 
-func NewImage(imageSize image.Point, tileSize image.Point, driver Driver) *Image {
+func NewPyramid(imageSize image.Point, tileSize image.Point, driver Driver) *Pyramid {
 	if v := imageSize; v.X <= 0 || v.Y <= 0 {
-		panicf("big: NewImage, imageSize = %v", imageSize)
+		panicf("big: NewPyramid, imageSize = %v", imageSize)
 	}
 	if v := tileSize; v.X <= 0 || v.Y <= 0 {
-		panicf("big: NewImage, tileSize = %v", tileSize)
+		panicf("big: NewPyramid, tileSize = %v", tileSize)
 	}
 	if driver == nil {
-		panicf("big: NewImage, driver = <nil>")
+		panicf("big: NewPyramid, driver = <nil>")
 	}
 
 	xLevels := 0
@@ -47,7 +47,7 @@ func NewImage(imageSize image.Point, tileSize image.Point, driver Driver) *Image
 		}
 	}
 
-	p := &Image{
+	p := &Pyramid{
 		ImageSize: make([]image.Point, maxInt(xLevels, yLevels)),
 		TileSize:  tileSize,
 		Driver:    driver,
@@ -69,131 +69,131 @@ func NewImage(imageSize image.Point, tileSize image.Point, driver Driver) *Image
 	return p
 }
 
-func (p *Image) SubLevels(levels int) *Image {
+func (p *Pyramid) SubLevels(levels int) *Pyramid {
 	if levels <= 0 || levels > len(p.ImageSize) {
-		panicf("big: Image.SubLevels, levels = %v", levels)
+		panicf("big: Pyramid.SubLevels, levels = %v", levels)
 	}
-	return &Image{
+	return &Pyramid{
 		ImageSize: append([]image.Point{}, p.ImageSize[:levels]...),
 		TileSize:  p.TileSize,
 		Driver:    p.Driver,
 	}
 }
 
-func (p *Image) Bounds() image.Rectangle {
+func (p *Pyramid) Bounds() image.Rectangle {
 	return image.Rectangle{Max: p.ImageSize[len(p.ImageSize)-1]}
 }
 
-func (p *Image) ColorModel() color.Model {
-	return memp.ColorModel(p.Driver.Channels(), p.Driver.DataType())
+func (p *Pyramid) ColorModel() color.Model {
+	return ximage.ColorModel(p.Driver.Channels(), p.Driver.DataType())
 }
 
-func (p *Image) At(x, y int) color.Color {
+func (p *Pyramid) At(x, y int) color.Color {
 	if !(image.Point{x, y}.In(p.Bounds())) {
 		return color.Gray{}
 	}
 
 	m, err := p.Driver.GetTile(len(p.ImageSize)-1, x/p.TileSize.X, y/p.TileSize.Y)
 	if err != nil {
-		panicf("big: Image.At(%d,%d), err = %v", x, y, err)
+		panicf("big: Pyramid.At(%d,%d), err = %v", x, y, err)
 	}
 
 	c := m.At(x%p.TileSize.X, y%p.TileSize.Y)
 	return c
 }
 
-func (p *Image) Set(x, y int, c color.Color) {
+func (p *Pyramid) Set(x, y int, c color.Color) {
 	if !(image.Point{x, y}.In(p.Bounds())) {
 		return
 	}
 
 	m, err := p.Driver.GetTile(len(p.ImageSize)-1, x/p.TileSize.X, y/p.TileSize.Y)
 	if err != nil {
-		panicf("big: Image.Set(%d,%d), err = %v", x, y, err)
+		panicf("big: Pyramid.Set(%d,%d), err = %v", x, y, err)
 	}
 
 	m.Set(x%p.TileSize.X, y%p.TileSize.Y, c)
 	return
 }
 
-func (p *Image) Levels() int {
+func (p *Pyramid) Levels() int {
 	return len(p.ImageSize)
 }
 
-func (p *Image) adjustLevel(level int) int {
+func (p *Pyramid) adjustLevel(level int) int {
 	if level < 0 {
 		return len(p.ImageSize) + level
 	}
 	return level
 }
 
-func (p *Image) TilesAcross(level int) int {
+func (p *Pyramid) TilesAcross(level int) int {
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		panicf("big: Image.TilesAcross, level = %v", level)
+		panicf("big: Pyramid.TilesAcross, level = %v", level)
 	}
 	level = p.adjustLevel(level)
 	v := (p.ImageSize[level].X + p.TileSize.X - 1) / p.TileSize.X
 	return v
 }
 
-func (p *Image) TilesDown(level int) int {
+func (p *Pyramid) TilesDown(level int) int {
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		panicf("big: Image.TilesDown, level = %v", level)
+		panicf("big: Pyramid.TilesDown, level = %v", level)
 	}
 	level = p.adjustLevel(level)
 	v := (p.ImageSize[level].Y + p.TileSize.Y - 1) / p.TileSize.Y
 	return v
 }
 
-func (p *Image) GetTile(level, col, row int) (m draw.Image) {
+func (p *Pyramid) GetTile(level, col, row int) (m draw.Image) {
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		panicf("big: Image.GetTile, level = %v", level)
+		panicf("big: Pyramid.GetTile, level = %v", level)
 	}
 
 	level = p.adjustLevel(level)
 	if col < 0 || col >= (p.ImageSize[level].X+p.TileSize.X-1)/p.TileSize.X {
-		panicf("big: Image.GetTile, level = %v, col = %v", level, col)
+		panicf("big: Pyramid.GetTile, level = %v, col = %v", level, col)
 	}
 	if row < 0 || row >= (p.ImageSize[level].X+p.TileSize.Y-1)/p.TileSize.Y {
-		panicf("big: Image.GetTile, level = %v, row = %v", level, row)
+		panicf("big: Pyramid.GetTile, level = %v, row = %v", level, row)
 	}
 
 	m, err := p.Driver.GetTile(level, col, row)
 	if err != nil {
-		panicf("big: Image.GetTile(%d,%d,%d), err = %v", level, col, row, err)
+		panicf("big: Pyramid.GetTile(%d,%d,%d), err = %v", level, col, row, err)
 	}
 	return m
 }
 
-func (p *Image) SetTile(level, col, row int, m image.Image) {
+func (p *Pyramid) SetTile(level, col, row int, m image.Image) {
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		panic(fmt.Errorf("bigimg: Image.GetTile, level = %v", level))
+		panic(fmt.Errorf("big: Pyramid.GetTile, level = %v", level))
 	}
 
 	level = p.adjustLevel(level)
 	if col < 0 || col >= (p.ImageSize[level].X+p.TileSize.X-1)/p.TileSize.X {
-		panic(fmt.Errorf("bigimg: Image.GetTile, level = %v, col = %v", level, col))
+		panic(fmt.Errorf("big: Pyramid.GetTile, level = %v, col = %v", level, col))
 	}
 	if row < 0 || row >= (p.ImageSize[level].X+p.TileSize.Y-1)/p.TileSize.Y {
-		panic(fmt.Errorf("bigimg: Image.GetTile, level = %v, row = %v", level, row))
+		panic(fmt.Errorf("big: Pyramid.GetTile, level = %v, row = %v", level, row))
 	}
 
 	if b := m.Bounds(); b.Dx() != p.TileSize.X || b.Dy() != p.TileSize.Y {
-		panic(fmt.Errorf("bigimg: Image.GetTile, m.Bounds() = %v", m.Bounds()))
+		panic(fmt.Errorf("big: Pyramid.GetTile, m.Bounds() = %v", m.Bounds()))
 	}
 
 	err := p.Driver.SetTile(level, col, row, m)
 	if err != nil {
-		panicf("big: Image.SetTile(%d,%d,%d), err = %v", level, col, row, err)
+		panicf("big: Pyramid.SetTile(%d,%d,%d), err = %v", level, col, row, err)
 	}
 }
 
-func (p *Image) ReadRect(dst draw.Image, r image.Rectangle, level int) (err error) {
+func (p *Pyramid) ReadRect(dst draw.Image, r image.Rectangle, level int) (err error) {
 	level = p.adjustLevel(level)
 	r = r.Intersect(dst.Bounds())
 
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		return fmt.Errorf("bigimg: Image.ReadRect, level = %v", level)
+		return fmt.Errorf("big: Pyramid.ReadRect, level = %v", level)
 	}
 	if r.Empty() {
 		return nil
@@ -225,7 +225,7 @@ func (p *Image) ReadRect(dst draw.Image, r image.Rectangle, level int) (err erro
 	return
 }
 
-func (p *Image) readRectFromTile(dst, tile draw.Image, r image.Rectangle, col, row int) {
+func (p *Pyramid) readRectFromTile(dst, tile draw.Image, r image.Rectangle, col, row int) {
 	bMinX := r.Min.X
 	bMinY := r.Min.Y
 	bMaxX := r.Max.X
@@ -260,12 +260,12 @@ func (p *Image) readRectFromTile(dst, tile draw.Image, r image.Rectangle, col, r
 	return
 }
 
-func (p *Image) WriteRect(m image.Image, r image.Rectangle, level int) (err error) {
+func (p *Pyramid) WriteRect(m image.Image, r image.Rectangle, level int) (err error) {
 	level = p.adjustLevel(level)
 	r = r.Intersect(p.Bounds())
 
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		err = fmt.Errorf("bigimg: Image.WriteRect, level = %v", level)
+		err = fmt.Errorf("big: Pyramid.WriteRect, level = %v", level)
 		return
 	}
 	if r.Empty() {
@@ -300,7 +300,7 @@ func (p *Image) WriteRect(m image.Image, r image.Rectangle, level int) (err erro
 	return
 }
 
-func (p *Image) writeRectToTile(tile draw.Image, src image.Image, r image.Rectangle, col, row int) {
+func (p *Pyramid) writeRectToTile(tile draw.Image, src image.Image, r image.Rectangle, col, row int) {
 	bMinX := r.Min.X
 	bMinY := r.Min.Y
 	bMaxX := r.Max.X
@@ -335,7 +335,7 @@ func (p *Image) writeRectToTile(tile draw.Image, src image.Image, r image.Rectan
 	return
 }
 
-func (p *Image) updateRectPyramid(level, x, y, dx, dy int) {
+func (p *Pyramid) updateRectPyramid(level, x, y, dx, dy int) {
 	for level > 0 && dx > 0 && dy > 0 {
 		minX, minY := x, y
 		maxX, maxY := x+dx, y+dy
@@ -371,7 +371,7 @@ func (p *Image) updateRectPyramid(level, x, y, dx, dy int) {
 	return
 }
 
-func (p *Image) updateParentTile(level, col, row int) {
+func (p *Pyramid) updateParentTile(level, col, row int) {
 	sr := image.Rect(0, 0, p.TileSize.X, p.TileSize.Y)
 	switch {
 	case col%2 == 0 && row%2 == 0:
@@ -425,14 +425,14 @@ func (p *Image) updateParentTile(level, col, row int) {
 	}
 }
 
-func (p *Image) SelectTileList(level int, r image.Rectangle) (
+func (p *Pyramid) SelectTileList(level int, r image.Rectangle) (
 	levelList, colList, rowList []int,
 ) {
 	level = p.adjustLevel(level)
 	r = r.Intersect(p.Bounds())
 
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		panic(fmt.Errorf("bigimg: Image.SelectTileList, level = %v", level))
+		panic(fmt.Errorf("big: Pyramid.SelectTileList, level = %v", level))
 	}
 	if r.Empty() {
 		return
