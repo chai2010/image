@@ -18,11 +18,13 @@ func ExamplePixSilce() {
 	b := ximage.AsPixSilce(a)
 
 	b.Int32s()[0] = 12345
+	b.SetValue(1, reflect.Int32, 1002)
+	b.SetValue(2, reflect.Int32, 1003.5)
 	fmt.Printf("len(b) = %d\n", len(b))
 	fmt.Printf("b.Int32s() = %v\n", b.Int32s())
 	// Output:
 	// len(b) = 12
-	// b.Int32s() = [12345 102 103]
+	// b.Int32s() = [12345 1002 1003]
 }
 
 func ExampleColor() {
