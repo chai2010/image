@@ -26,7 +26,7 @@ func TestPyrDown_gray(t *testing.T) {
 		src, src.Bounds(),
 		xdraw.Src, nil,
 	)
-	_PyrDown_ApproxBiLinear_Gray_Gray(
+	abPyrDown_Gray_Gray(
 		dst1, dst1.Bounds(),
 		src, image.Pt(0, 0),
 	)
@@ -59,7 +59,7 @@ func TestPyrDown_gray16(t *testing.T) {
 		src, src.Bounds(),
 		xdraw.Src, nil,
 	)
-	_PyrDown_ApproxBiLinear_Gray16_Gray16(
+	abPyrDown_Gray16_Gray16(
 		dst1, dst1.Bounds(),
 		src, image.Pt(0, 0),
 	)
@@ -92,7 +92,7 @@ func TestPyrDown_rgba(t *testing.T) {
 		src, src.Bounds(),
 		xdraw.Src, nil,
 	)
-	_PyrDown_ApproxBiLinear_RGBA_RGBA(
+	abPyrDown_RGBA_RGBA(
 		dst1, dst1.Bounds(),
 		src, image.Pt(0, 0),
 	)
@@ -125,7 +125,7 @@ func TestPyrDown_rgba64(t *testing.T) {
 		src, src.Bounds(),
 		xdraw.Src, nil,
 	)
-	_PyrDown_ApproxBiLinear_RGBA64_RGBA64(
+	abPyrDown_RGBA64_RGBA64(
 		dst1, dst1.Bounds(),
 		src, image.Pt(0, 0),
 	)

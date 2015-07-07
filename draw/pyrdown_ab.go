@@ -12,7 +12,7 @@ import (
 	xdraw "golang.org/x/image/draw"
 )
 
-func _PyrDown_ApproxBiLinear_Gray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image.Point) {
+func abPyrDown_Gray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -36,7 +36,7 @@ func _PyrDown_ApproxBiLinear_Gray_Gray(dst *image.Gray, r image.Rectangle, src *
 	}
 }
 
-func _PyrDown_ApproxBiLinear_Gray_Gray16(dst *image.Gray, r image.Rectangle, src *image.Gray16, sp image.Point) {
+func abPyrDown_Gray_Gray16(dst *image.Gray, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -61,7 +61,7 @@ func _PyrDown_ApproxBiLinear_Gray_Gray16(dst *image.Gray, r image.Rectangle, src
 	}
 }
 
-func _PyrDown_ApproxBiLinear_Gray_RGBA(dst *image.Gray, r image.Rectangle, src *image.RGBA, sp image.Point) {
+func abPyrDown_Gray_RGBA(dst *image.Gray, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -101,7 +101,7 @@ func _PyrDown_ApproxBiLinear_Gray_RGBA(dst *image.Gray, r image.Rectangle, src *
 	}
 }
 
-func _PyrDown_ApproxBiLinear_Gray_RGBA64(dst *image.Gray, r image.Rectangle, src *image.RGBA64, sp image.Point) {
+func abPyrDown_Gray_RGBA64(dst *image.Gray, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -109,15 +109,15 @@ func _PyrDown_ApproxBiLinear_Gray_RGBA64(dst *image.Gray, r image.Rectangle, src
 	)
 }
 
-func _PyrDown_ApproxBiLinear_Gray_YCbCr(dst *image.Gray, r image.Rectangle, src *image.YCbCr, sp image.Point) {
-	_PyrDown_ApproxBiLinear_Gray_Gray(dst, r, &image.Gray{
+func abPyrDown_Gray_YCbCr(dst *image.Gray, r image.Rectangle, src *image.YCbCr, sp image.Point) {
+	abPyrDown_Gray_Gray(dst, r, &image.Gray{
 		Pix:    src.Y,
 		Stride: src.YStride,
 		Rect:   src.Rect,
 	}, sp)
 }
 
-func _PyrDown_ApproxBiLinear_Gray16_Gray(dst *image.Gray16, r image.Rectangle, src *image.Gray, sp image.Point) {
+func abPyrDown_Gray16_Gray(dst *image.Gray16, r image.Rectangle, src *image.Gray, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -125,7 +125,7 @@ func _PyrDown_ApproxBiLinear_Gray16_Gray(dst *image.Gray16, r image.Rectangle, s
 	)
 }
 
-func _PyrDown_ApproxBiLinear_Gray16_Gray16(dst *image.Gray16, r image.Rectangle, src *image.Gray16, sp image.Point) {
+func abPyrDown_Gray16_Gray16(dst *image.Gray16, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -152,7 +152,7 @@ func _PyrDown_ApproxBiLinear_Gray16_Gray16(dst *image.Gray16, r image.Rectangle,
 	}
 }
 
-func _PyrDown_ApproxBiLinear_Gray16_RGBA(dst *image.Gray16, r image.Rectangle, src *image.RGBA, sp image.Point) {
+func abPyrDown_Gray16_RGBA(dst *image.Gray16, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -160,7 +160,7 @@ func _PyrDown_ApproxBiLinear_Gray16_RGBA(dst *image.Gray16, r image.Rectangle, s
 	)
 }
 
-func _PyrDown_ApproxBiLinear_Gray16_RGBA64(dst *image.Gray16, r image.Rectangle, src *image.RGBA64, sp image.Point) {
+func abPyrDown_Gray16_RGBA64(dst *image.Gray16, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -168,7 +168,7 @@ func _PyrDown_ApproxBiLinear_Gray16_RGBA64(dst *image.Gray16, r image.Rectangle,
 	)
 }
 
-func _PyrDown_ApproxBiLinear_Gray16_YCbCr(dst *image.Gray16, r image.Rectangle, src *image.YCbCr, sp image.Point) {
+func abPyrDown_Gray16_YCbCr(dst *image.Gray16, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -176,7 +176,7 @@ func _PyrDown_ApproxBiLinear_Gray16_YCbCr(dst *image.Gray16, r image.Rectangle, 
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA_Gray(dst *image.RGBA, r image.Rectangle, src *image.Gray, sp image.Point) {
+func abPyrDown_RGBA_Gray(dst *image.RGBA, r image.Rectangle, src *image.Gray, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -184,7 +184,7 @@ func _PyrDown_ApproxBiLinear_RGBA_Gray(dst *image.RGBA, r image.Rectangle, src *
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA_Gray16(dst *image.RGBA, r image.Rectangle, src *image.Gray16, sp image.Point) {
+func abPyrDown_RGBA_Gray16(dst *image.RGBA, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -192,7 +192,7 @@ func _PyrDown_ApproxBiLinear_RGBA_Gray16(dst *image.RGBA, r image.Rectangle, src
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA_RGBA(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point) {
+func abPyrDown_RGBA_RGBA(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -235,7 +235,7 @@ func _PyrDown_ApproxBiLinear_RGBA_RGBA(dst *image.RGBA, r image.Rectangle, src *
 	}
 }
 
-func _PyrDown_ApproxBiLinear_RGBA_RGBA64(dst *image.RGBA, r image.Rectangle, src *image.RGBA64, sp image.Point) {
+func abPyrDown_RGBA_RGBA64(dst *image.RGBA, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -243,7 +243,7 @@ func _PyrDown_ApproxBiLinear_RGBA_RGBA64(dst *image.RGBA, r image.Rectangle, src
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA_YCbCr(dst *image.RGBA, r image.Rectangle, src *image.YCbCr, sp image.Point) {
+func abPyrDown_RGBA_YCbCr(dst *image.RGBA, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -251,7 +251,7 @@ func _PyrDown_ApproxBiLinear_RGBA_YCbCr(dst *image.RGBA, r image.Rectangle, src 
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA64_Gray(dst *image.RGBA64, r image.Rectangle, src *image.Gray, sp image.Point) {
+func abPyrDown_RGBA64_Gray(dst *image.RGBA64, r image.Rectangle, src *image.Gray, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -259,7 +259,7 @@ func _PyrDown_ApproxBiLinear_RGBA64_Gray(dst *image.RGBA64, r image.Rectangle, s
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA64_Gray16(dst *image.RGBA64, r image.Rectangle, src *image.Gray16, sp image.Point) {
+func abPyrDown_RGBA64_Gray16(dst *image.RGBA64, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -267,7 +267,7 @@ func _PyrDown_ApproxBiLinear_RGBA64_Gray16(dst *image.RGBA64, r image.Rectangle,
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA64_RGBA(dst *image.RGBA64, r image.Rectangle, src *image.RGBA, sp image.Point) {
+func abPyrDown_RGBA64_RGBA(dst *image.RGBA64, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -275,7 +275,7 @@ func _PyrDown_ApproxBiLinear_RGBA64_RGBA(dst *image.RGBA64, r image.Rectangle, s
 	)
 }
 
-func _PyrDown_ApproxBiLinear_RGBA64_RGBA64(dst *image.RGBA64, r image.Rectangle, src *image.RGBA64, sp image.Point) {
+func abPyrDown_RGBA64_RGBA64(dst *image.RGBA64, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
 	off2 := off1 + src.Stride
@@ -324,7 +324,7 @@ func _PyrDown_ApproxBiLinear_RGBA64_RGBA64(dst *image.RGBA64, r image.Rectangle,
 	}
 }
 
-func _PyrDown_ApproxBiLinear_RGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, src *image.YCbCr, sp image.Point) {
+func abPyrDown_RGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	xdraw.ApproxBiLinear.Scale(
 		dst, r,
 		src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -332,78 +332,78 @@ func _PyrDown_ApproxBiLinear_RGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, 
 	)
 }
 
-func _PyrDown_ApproxBiLinear(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func abPyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	switch dst := dst.(type) {
 	case *image.Gray:
 		switch src := src.(type) {
 		case *image.Gray:
-			_PyrDown_ApproxBiLinear_Gray_Gray(dst, r, src, sp)
+			abPyrDown_Gray_Gray(dst, r, src, sp)
 			return
 		case *image.Gray16:
-			_PyrDown_ApproxBiLinear_Gray_Gray16(dst, r, src, sp)
+			abPyrDown_Gray_Gray16(dst, r, src, sp)
 			return
 		case *image.RGBA:
-			_PyrDown_ApproxBiLinear_Gray_RGBA(dst, r, src, sp)
+			abPyrDown_Gray_RGBA(dst, r, src, sp)
 			return
 		case *image.RGBA64:
-			_PyrDown_ApproxBiLinear_Gray_RGBA64(dst, r, src, sp)
+			abPyrDown_Gray_RGBA64(dst, r, src, sp)
 			return
 		case *image.YCbCr:
-			_PyrDown_ApproxBiLinear_Gray_YCbCr(dst, r, src, sp)
+			abPyrDown_Gray_YCbCr(dst, r, src, sp)
 			return
 		}
 	case *image.Gray16:
 		switch src := src.(type) {
 		case *image.Gray:
-			_PyrDown_ApproxBiLinear_Gray16_Gray(dst, r, src, sp)
+			abPyrDown_Gray16_Gray(dst, r, src, sp)
 			return
 		case *image.Gray16:
-			_PyrDown_ApproxBiLinear_Gray16_Gray16(dst, r, src, sp)
+			abPyrDown_Gray16_Gray16(dst, r, src, sp)
 			return
 		case *image.RGBA:
-			_PyrDown_ApproxBiLinear_Gray16_RGBA(dst, r, src, sp)
+			abPyrDown_Gray16_RGBA(dst, r, src, sp)
 			return
 		case *image.RGBA64:
-			_PyrDown_ApproxBiLinear_Gray16_RGBA64(dst, r, src, sp)
+			abPyrDown_Gray16_RGBA64(dst, r, src, sp)
 			return
 		case *image.YCbCr:
-			_PyrDown_ApproxBiLinear_Gray16_YCbCr(dst, r, src, sp)
+			abPyrDown_Gray16_YCbCr(dst, r, src, sp)
 			return
 		}
 	case *image.RGBA:
 		switch src := src.(type) {
 		case *image.Gray:
-			_PyrDown_ApproxBiLinear_RGBA_Gray(dst, r, src, sp)
+			abPyrDown_RGBA_Gray(dst, r, src, sp)
 			return
 		case *image.Gray16:
-			_PyrDown_ApproxBiLinear_RGBA_Gray16(dst, r, src, sp)
+			abPyrDown_RGBA_Gray16(dst, r, src, sp)
 			return
 		case *image.RGBA:
-			_PyrDown_ApproxBiLinear_RGBA_RGBA(dst, r, src, sp)
+			abPyrDown_RGBA_RGBA(dst, r, src, sp)
 			return
 		case *image.RGBA64:
-			_PyrDown_ApproxBiLinear_RGBA_RGBA64(dst, r, src, sp)
+			abPyrDown_RGBA_RGBA64(dst, r, src, sp)
 			return
 		case *image.YCbCr:
-			_PyrDown_ApproxBiLinear_RGBA_YCbCr(dst, r, src, sp)
+			abPyrDown_RGBA_YCbCr(dst, r, src, sp)
 			return
 		}
 	case *image.RGBA64:
 		switch src := src.(type) {
 		case *image.Gray:
-			_PyrDown_ApproxBiLinear_RGBA64_Gray(dst, r, src, sp)
+			abPyrDown_RGBA64_Gray(dst, r, src, sp)
 			return
 		case *image.Gray16:
-			_PyrDown_ApproxBiLinear_RGBA64_Gray16(dst, r, src, sp)
+			abPyrDown_RGBA64_Gray16(dst, r, src, sp)
 			return
 		case *image.RGBA:
-			_PyrDown_ApproxBiLinear_RGBA64_RGBA(dst, r, src, sp)
+			abPyrDown_RGBA64_RGBA(dst, r, src, sp)
 			return
 		case *image.RGBA64:
-			_PyrDown_ApproxBiLinear_RGBA64_RGBA64(dst, r, src, sp)
+			abPyrDown_RGBA64_RGBA64(dst, r, src, sp)
 			return
 		case *image.YCbCr:
-			_PyrDown_ApproxBiLinear_RGBA64_YCbCr(dst, r, src, sp)
+			abPyrDown_RGBA64_YCbCr(dst, r, src, sp)
 			return
 		}
 	}

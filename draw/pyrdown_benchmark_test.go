@@ -60,7 +60,7 @@ func benchPyrDownGray(b *testing.B, width, height int) {
 	src := image.NewGray(image.Rect(0, 0, width, height))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_PyrDown_ApproxBiLinear_Gray_Gray(
+		abPyrDown_Gray_Gray(
 			dst, dst.Bounds(),
 			src, image.Pt(0, 0),
 		)
@@ -85,7 +85,7 @@ func benchPyrDownRGBA(b *testing.B, width, height int) {
 	src := image.NewRGBA(image.Rect(0, 0, width, height))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_PyrDown_ApproxBiLinear_RGBA_RGBA(
+		abPyrDown_RGBA_RGBA(
 			dst, dst.Bounds(),
 			src, image.Pt(0, 0),
 		)
@@ -110,7 +110,7 @@ func benchPyrDownGray16(b *testing.B, width, height int) {
 	src := image.NewGray16(image.Rect(0, 0, width, height))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_PyrDown_ApproxBiLinear_Gray16_Gray16(
+		abPyrDown_Gray16_Gray16(
 			dst, dst.Bounds(),
 			src, image.Pt(0, 0),
 		)
@@ -135,7 +135,7 @@ func benchPyrDownRGBA64(b *testing.B, width, height int) {
 	src := image.NewRGBA64(image.Rect(0, 0, width, height))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_PyrDown_ApproxBiLinear_RGBA64_RGBA64(
+		abPyrDown_RGBA64_RGBA64(
 			dst, dst.Bounds(),
 			src, image.Pt(0, 0),
 		)
