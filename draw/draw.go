@@ -23,7 +23,8 @@ type Drawer interface {
 
 func Draw(dst Image, r image.Rectangle, src image.Image, sp image.Point) {
 	if r.In(dst.Bounds()) && image.Rect(sp.X, sp.Y, sp.X+r.Dx(), sp.Y+r.Dy()).In(src.Bounds()) {
-		// fast case
+		drawFast(dst, r, src, sp)
+		return
 	}
 	xdraw.Draw(dst, r, src, sp, xdraw.Src)
 }
