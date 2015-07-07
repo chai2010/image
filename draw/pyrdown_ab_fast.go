@@ -9,8 +9,95 @@ import (
 	"image/color"
 	"image/draw"
 
+	ximage "github.com/chai2010/image"
 	xdraw "golang.org/x/image/draw"
 )
+
+func abPyrDownFast(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+	switch dst := dst.(type) {
+	case *image.Gray:
+		switch src := src.(type) {
+		case *image.Gray:
+			abPyrDown_Gray_Gray(dst, r, src, sp)
+			return
+		case *image.Gray16:
+			abPyrDown_Gray_Gray16(dst, r, src, sp)
+			return
+		case *image.RGBA:
+			abPyrDown_Gray_RGBA(dst, r, src, sp)
+			return
+		case *image.RGBA64:
+			abPyrDown_Gray_RGBA64(dst, r, src, sp)
+			return
+		case *image.YCbCr:
+			abPyrDown_Gray_YCbCr(dst, r, src, sp)
+			return
+		}
+	case *image.Gray16:
+		switch src := src.(type) {
+		case *image.Gray:
+			abPyrDown_Gray16_Gray(dst, r, src, sp)
+			return
+		case *image.Gray16:
+			abPyrDown_Gray16_Gray16(dst, r, src, sp)
+			return
+		case *image.RGBA:
+			abPyrDown_Gray16_RGBA(dst, r, src, sp)
+			return
+		case *image.RGBA64:
+			abPyrDown_Gray16_RGBA64(dst, r, src, sp)
+			return
+		case *image.YCbCr:
+			abPyrDown_Gray16_YCbCr(dst, r, src, sp)
+			return
+		}
+	case *image.RGBA:
+		switch src := src.(type) {
+		case *image.Gray:
+			abPyrDown_RGBA_Gray(dst, r, src, sp)
+			return
+		case *image.Gray16:
+			abPyrDown_RGBA_Gray16(dst, r, src, sp)
+			return
+		case *image.RGBA:
+			abPyrDown_RGBA_RGBA(dst, r, src, sp)
+			return
+		case *image.RGBA64:
+			abPyrDown_RGBA_RGBA64(dst, r, src, sp)
+			return
+		case *image.YCbCr:
+			abPyrDown_RGBA_YCbCr(dst, r, src, sp)
+			return
+		}
+	case *image.RGBA64:
+		switch src := src.(type) {
+		case *image.Gray:
+			abPyrDown_RGBA64_Gray(dst, r, src, sp)
+			return
+		case *image.Gray16:
+			abPyrDown_RGBA64_Gray16(dst, r, src, sp)
+			return
+		case *image.RGBA:
+			abPyrDown_RGBA64_RGBA(dst, r, src, sp)
+			return
+		case *image.RGBA64:
+			abPyrDown_RGBA64_RGBA64(dst, r, src, sp)
+			return
+		case *image.YCbCr:
+			abPyrDown_RGBA64_YCbCr(dst, r, src, sp)
+			return
+		}
+	}
+
+	if dst, ok := ximage.AsMemPImage(dst); ok {
+		if src, ok := ximage.AsMemPImage(src); ok {
+			abPyrDown_xImage(dst, r, src, sp)
+			return
+		}
+	}
+
+	abPyrDownImage(dst, r, src, sp)
+}
 
 func abPyrDown_Gray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
@@ -332,82 +419,7 @@ func abPyrDown_RGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, src *image.YCb
 	)
 }
 
-func abPyrDown(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	switch dst := dst.(type) {
-	case *image.Gray:
-		switch src := src.(type) {
-		case *image.Gray:
-			abPyrDown_Gray_Gray(dst, r, src, sp)
-			return
-		case *image.Gray16:
-			abPyrDown_Gray_Gray16(dst, r, src, sp)
-			return
-		case *image.RGBA:
-			abPyrDown_Gray_RGBA(dst, r, src, sp)
-			return
-		case *image.RGBA64:
-			abPyrDown_Gray_RGBA64(dst, r, src, sp)
-			return
-		case *image.YCbCr:
-			abPyrDown_Gray_YCbCr(dst, r, src, sp)
-			return
-		}
-	case *image.Gray16:
-		switch src := src.(type) {
-		case *image.Gray:
-			abPyrDown_Gray16_Gray(dst, r, src, sp)
-			return
-		case *image.Gray16:
-			abPyrDown_Gray16_Gray16(dst, r, src, sp)
-			return
-		case *image.RGBA:
-			abPyrDown_Gray16_RGBA(dst, r, src, sp)
-			return
-		case *image.RGBA64:
-			abPyrDown_Gray16_RGBA64(dst, r, src, sp)
-			return
-		case *image.YCbCr:
-			abPyrDown_Gray16_YCbCr(dst, r, src, sp)
-			return
-		}
-	case *image.RGBA:
-		switch src := src.(type) {
-		case *image.Gray:
-			abPyrDown_RGBA_Gray(dst, r, src, sp)
-			return
-		case *image.Gray16:
-			abPyrDown_RGBA_Gray16(dst, r, src, sp)
-			return
-		case *image.RGBA:
-			abPyrDown_RGBA_RGBA(dst, r, src, sp)
-			return
-		case *image.RGBA64:
-			abPyrDown_RGBA_RGBA64(dst, r, src, sp)
-			return
-		case *image.YCbCr:
-			abPyrDown_RGBA_YCbCr(dst, r, src, sp)
-			return
-		}
-	case *image.RGBA64:
-		switch src := src.(type) {
-		case *image.Gray:
-			abPyrDown_RGBA64_Gray(dst, r, src, sp)
-			return
-		case *image.Gray16:
-			abPyrDown_RGBA64_Gray16(dst, r, src, sp)
-			return
-		case *image.RGBA:
-			abPyrDown_RGBA64_RGBA(dst, r, src, sp)
-			return
-		case *image.RGBA64:
-			abPyrDown_RGBA64_RGBA64(dst, r, src, sp)
-			return
-		case *image.YCbCr:
-			abPyrDown_RGBA64_YCbCr(dst, r, src, sp)
-			return
-		}
-	}
-
+func abPyrDownImage(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	dstColorRGBA64 := &color.RGBA64{}
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		for x := r.Min.X; x < r.Max.X; x++ {

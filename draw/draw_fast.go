@@ -100,13 +100,13 @@ func drawImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image
 		return
 	}
 
-	dx := ximage.SizeofPixel(dst.Channels, dst.DataType) * r.Dx()
+	dxSize := ximage.SizeofPixel(dst.Channels, dst.DataType) * r.Dx()
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
 		off1 := src.PixOffset(sp.X, y)
 
-		dstLine := dst.Pix[off0:][:dx]
-		srcLine := src.Pix[off1:][:dx]
+		dstLine := dst.Pix[off0:][:dxSize]
+		srcLine := src.Pix[off1:][:dxSize]
 
 		copy(dstLine, srcLine)
 	}
