@@ -270,5 +270,5 @@ func SizeofImage(m image.Image) int {
 	}
 
 	// return same as RGBA64 size
-	return m.Bounds().Dx() * m.Bounds().Dy() * 8
+	return int(unsafe.Sizeof((*image.RGBA64)(nil))) + m.Bounds().Dx()*m.Bounds().Dy()*8
 }
