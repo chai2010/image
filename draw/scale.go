@@ -36,9 +36,15 @@ type Scaler interface {
 type nnScaler struct{}
 
 func (nnScaler) Scale(dst draw.Image, dr image.Rectangle, src image.Image, sr image.Rectangle) {
-	if dr.In(dst.Bounds()) && sr.In(src.Bounds()) && sr.Dx() == dr.Dx()*2 && sr.Dy() == dr.Dy()*2 {
-		nnPyrDownFast(dst, dr, src, sr.Min)
-		return
+	if dr.In(dst.Bounds()) && sr.In(src.Bounds()) {
+		if sr.Dx() == dr.Dx()*2 && sr.Dy() == dr.Dy()*2 {
+			nnPyrDownFast(dst, dr, src, sr.Min)
+			return
+		}
+		if sr.Dx() == dr.Dx() && sr.Dy() == dr.Dy() {
+			drawFast(dst, dr, src, sr.Min)
+			return
+		}
 	}
 	xdraw.NearestNeighbor.Scale(
 		dst, dr, src, sr,
@@ -49,9 +55,15 @@ func (nnScaler) Scale(dst draw.Image, dr image.Rectangle, src image.Image, sr im
 type abScaler struct{}
 
 func (abScaler) Scale(dst draw.Image, dr image.Rectangle, src image.Image, sr image.Rectangle) {
-	if dr.In(dst.Bounds()) && sr.In(src.Bounds()) && sr.Dx() == dr.Dx()*2 && sr.Dy() == dr.Dy()*2 {
-		abPyrDownFast(dst, dr, src, sr.Min)
-		return
+	if dr.In(dst.Bounds()) && sr.In(src.Bounds()) {
+		if sr.Dx() == dr.Dx()*2 && sr.Dy() == dr.Dy()*2 {
+			abPyrDownFast(dst, dr, src, sr.Min)
+			return
+		}
+		if sr.Dx() == dr.Dx() && sr.Dy() == dr.Dy() {
+			drawFast(dst, dr, src, sr.Min)
+			return
+		}
 	}
 	xdraw.ApproxBiLinear.Scale(
 		dst, dr, src, sr,
