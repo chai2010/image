@@ -228,7 +228,14 @@ func SizeofPixel(channels int, dataType reflect.Kind) int {
 	return channels * SizeofKind(dataType)
 }
 
+type SizeofImager interface {
+	SizeofImage() int
+}
+
 func SizeofImage(m image.Image) int {
+	if m, ok := m.(SizeofImager); ok {
+		return m.SizeofImage()
+	}
 	if m, ok := AsMemPImage(m); ok {
 		return int(unsafe.Sizeof(*m)) + len(m.Pix)
 	}
