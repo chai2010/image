@@ -147,8 +147,38 @@ func nnPyrDownImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp 
 		dstLine := dst.Pix[off0:][:r.Dx()*pixSize*1]
 		srcLine := src.Pix[off1:][:r.Dx()*pixSize*2]
 
-		for i, j := 0, 0; i < len(dstLine); i, j = i+pixSize*1, j+pixSize*2 {
-			copy(dstLine[i:i+pixSize], srcLine[j:j+pixSize])
+		switch pixSize {
+		case 1:
+			for i, j := 0, 0; i < len(dstLine); i, j = i+1*1, j+1*2 {
+				dstLine[i+0] = srcLine[j+0]
+			}
+		case 2:
+			for i, j := 0, 0; i < len(dstLine); i, j = i+2*1, j+2*2 {
+				dstLine[i+0] = srcLine[j+0]
+				dstLine[i+1] = srcLine[j+1]
+			}
+		case 4:
+			for i, j := 0, 0; i < len(dstLine); i, j = i+4*1, j+4*2 {
+				dstLine[i+0] = srcLine[j+0]
+				dstLine[i+1] = srcLine[j+1]
+				dstLine[i+2] = srcLine[j+2]
+				dstLine[i+3] = srcLine[j+3]
+			}
+		case 8:
+			for i, j := 0, 0; i < len(dstLine); i, j = i+8*1, j+8*2 {
+				dstLine[i+0] = srcLine[j+0]
+				dstLine[i+1] = srcLine[j+1]
+				dstLine[i+2] = srcLine[j+2]
+				dstLine[i+3] = srcLine[j+3]
+				dstLine[i+4] = srcLine[j+4]
+				dstLine[i+5] = srcLine[j+5]
+				dstLine[i+6] = srcLine[j+6]
+				dstLine[i+7] = srcLine[j+7]
+			}
+		default:
+			for i, j := 0, 0; i < len(dstLine); i, j = i+pixSize*1, j+pixSize*2 {
+				copy(dstLine[i:i+pixSize], srcLine[j:j+pixSize])
+			}
 		}
 
 		off0 += dst.Stride * 1
