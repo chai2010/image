@@ -296,6 +296,25 @@ func (p *Image) SubImage(r image.Rectangle) image.Image {
 	}
 }
 
+func (p *Image) AsStdImage() (m image.Image, ok bool) {
+	switch {
+	case p.Channels == 1 && p.DataType == reflect.Uint8:
+		return &image.Gray{
+			Pix:    p.Pix,
+			Stride: p.Stride,
+			Rect:   p.Rect,
+		}, true
+	case p.Channels == 4 && p.DataType == reflect.Uint8:
+		return &image.RGBA{
+			Pix:    p.Pix,
+			Stride: p.Stride,
+			Rect:   p.Rect,
+		}, true
+	default:
+		return nil, false
+	}
+}
+
 func (p *Image) StdImage() image.Image {
 	switch {
 	case p.Channels == 1 && p.DataType == reflect.Uint8:
