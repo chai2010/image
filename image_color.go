@@ -5,10 +5,8 @@
 package image
 
 import (
-	"image"
 	"image/color"
 	"reflect"
-	"unsafe"
 )
 
 type Color struct {
@@ -226,49 +224,4 @@ func SizeofKind(dataType reflect.Kind) int {
 
 func SizeofPixel(channels int, dataType reflect.Kind) int {
 	return channels * SizeofKind(dataType)
-}
-
-type SizeofImager interface {
-	SizeofImage() int
-}
-
-func SizeofImage(m image.Image) int {
-	if m, ok := m.(SizeofImager); ok {
-		return m.SizeofImage()
-	}
-	if m, ok := AsMemPImage(m); ok {
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	}
-
-	switch m := m.(type) {
-	case *image.Alpha:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.Alpha16:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.CMYK:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.Gray:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.Gray16:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.NRGBA:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.NRGBA64:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.Paletted:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.RGBA:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.RGBA64:
-		return int(unsafe.Sizeof(*m)) + len(m.Pix)
-	case *image.Rectangle:
-		return int(unsafe.Sizeof(*m))
-	case *image.Uniform:
-		return int(unsafe.Sizeof(*m))
-	case *image.YCbCr:
-		return int(unsafe.Sizeof(*m)) + len(m.Y) + len(m.Cb) + len(m.Cr)
-	}
-
-	// return same as RGBA64 size
-	return int(unsafe.Sizeof((*image.RGBA64)(nil))) + m.Bounds().Dx()*m.Bounds().Dy()*8
 }

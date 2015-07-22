@@ -9,6 +9,7 @@ import (
 	"image/color"
 	"reflect"
 	"runtime"
+	"unsafe"
 )
 
 const (
@@ -334,4 +335,86 @@ func (p *Image) StdImage() image.Image {
 	}
 
 	return p
+}
+
+func ChannelsOf(m image.Image) int {
+	if m, ok := AsMemPImage(m); ok {
+		return m.Channels
+	}
+	switch m.(type) {
+	case *image.Gray:
+		return 1
+	case *image.Gray16:
+		return 1
+	case *image.YCbCr:
+		return 3
+	}
+	return 4
+}
+
+func DepthOf(m image.Image) int {
+	if m, ok := AsMemPImage(m); ok {
+		return SizeofKind(m.DataType) * 8
+	}
+	switch m.(type) {
+	case *image.Gray:
+		return 1 * 8
+	case *image.Gray16:
+		return 2 * 8
+	case *image.NRGBA:
+		return 1 * 8
+	case *image.NRGBA64:
+		return 2 * 8
+	case *image.RGBA:
+		return 1 * 8
+	case *image.RGBA64:
+		return 2 * 8
+	case *image.YCbCr:
+		return 1 * 8
+	}
+	return 2 * 8
+}
+
+type SizeofImager interface {
+	SizeofImage() int
+}
+
+func SizeofImage(m image.Image) int {
+	if m, ok := m.(SizeofImager); ok {
+		return m.SizeofImage()
+	}
+	if m, ok := AsMemPImage(m); ok {
+		return int(unsafe.Sizeof(*m)) + len(m.Pix)
+	}
+
+	b := m.Bounds()
+	switch m := m.(type) {
+	case *image.Alpha:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*1
+	case *image.Alpha16:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*2
+	case *image.CMYK:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*4
+	case *image.Gray:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*1
+	case *image.Gray16:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*2
+	case *image.NRGBA:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*4
+	case *image.NRGBA64:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*8
+	case *image.RGBA:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*4
+	case *image.RGBA64:
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*8
+	case *image.Rectangle:
+		return int(unsafe.Sizeof(*m))
+	case *image.Uniform:
+		return int(unsafe.Sizeof(*m))
+	case *image.YCbCr:
+		return int(unsafe.Sizeof(*m)) + len(m.Y) + len(m.Cb) + len(m.Cr)
+	}
+
+	// return same as RGBA64 size
+	return int(unsafe.Sizeof((*image.RGBA64)(nil))) + b.Dx()*b.Dy()*8
 }
