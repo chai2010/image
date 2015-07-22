@@ -10,15 +10,8 @@ import (
 )
 
 var (
-	_ RGB48Imager = (*RGB48Image)(nil)
 	_ image.Image = (*RGB48Image)(nil)
 )
-
-type RGB48Imager interface {
-	image.Image
-	RGB48At(x, y int) [3]uint16
-	SetRGB48(x, y int, c [3]uint16)
-}
 
 type RGB48Image struct {
 	Pix    []uint8
