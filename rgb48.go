@@ -10,30 +10,14 @@ import (
 )
 
 var (
-	_ color.Color = (*RGB48Color)(nil)
+	_ RGB48Imager = (*RGB48Image)(nil)
 	_ image.Image = (*RGB48Image)(nil)
 )
 
-var RGB48Model color.Model = color.ModelFunc(rgb48Model)
-
-type RGB48Color struct {
-	R, G, B uint16
-}
-
-func (c RGB48Color) RGBA() (r, g, b, a uint32) {
-	r = uint32(c.R)
-	g = uint32(c.G)
-	b = uint32(c.B)
-	a = 0xffff
-	return
-}
-
-func rgb48Model(c color.Color) color.Color {
-	if _, ok := c.(RGB48Color); ok {
-		return c
-	}
-	r, g, b, _ := c.RGBA()
-	return RGB48Color{R: uint16(r), G: uint16(g), B: uint16(b)}
+type RGB48Imager interface {
+	image.Image
+	RGB48At(x, y int) [3]uint16
+	SetRGB48(x, y int, c [3]uint16)
 }
 
 type RGB48Image struct {
@@ -42,23 +26,32 @@ type RGB48Image struct {
 	Rect   image.Rectangle
 }
 
-func (p *RGB48Image) ColorModel() color.Model { return color.RGBAModel }
+func (p *RGB48Image) ColorModel() color.Model { return color.RGBA64Model }
 
 func (p *RGB48Image) Bounds() image.Rectangle { return p.Rect }
 
 func (p *RGB48Image) At(x, y int) color.Color {
-	return p.RGB48At(x, y)
-}
-
-func (p *RGB48Image) RGB48At(x, y int) RGB48Color {
 	if !(image.Point{x, y}.In(p.Rect)) {
-		return RGB48Color{}
+		return color.RGBA64{}
 	}
 	i := p.PixOffset(x, y)
-	return RGB48Color{
+	return color.RGBA64{
 		R: uint16(p.Pix[i+0])<<8 | uint16(p.Pix[i+1]),
 		G: uint16(p.Pix[i+2])<<8 | uint16(p.Pix[i+3]),
 		B: uint16(p.Pix[i+4])<<8 | uint16(p.Pix[i+5]),
+		A: 0xffff,
+	}
+}
+
+func (p *RGB48Image) RGB48At(x, y int) [3]uint16 {
+	if !(image.Point{x, y}.In(p.Rect)) {
+		return [3]uint16{}
+	}
+	i := p.PixOffset(x, y)
+	return [3]uint16{
+		uint16(p.Pix[i+0])<<8 | uint16(p.Pix[i+1]),
+		uint16(p.Pix[i+2])<<8 | uint16(p.Pix[i+3]),
+		uint16(p.Pix[i+4])<<8 | uint16(p.Pix[i+5]),
 	}
 }
 
@@ -73,7 +66,7 @@ func (p *RGB48Image) Set(x, y int, c color.Color) {
 		return
 	}
 	i := p.PixOffset(x, y)
-	c1 := RGB48Model.Convert(c).(RGB48Color)
+	c1 := color.RGBA64Model.Convert(c).(color.RGBA64)
 	p.Pix[i+0] = uint8(c1.R >> 8)
 	p.Pix[i+1] = uint8(c1.R)
 	p.Pix[i+2] = uint8(c1.G >> 8)
@@ -83,17 +76,17 @@ func (p *RGB48Image) Set(x, y int, c color.Color) {
 	return
 }
 
-func (p *RGB48Image) SetRGB48(x, y int, c RGB48Color) {
+func (p *RGB48Image) SetRGB48(x, y int, c [3]uint16) {
 	if !(image.Point{x, y}.In(p.Rect)) {
 		return
 	}
 	i := p.PixOffset(x, y)
-	p.Pix[i+0] = uint8(c.R >> 8)
-	p.Pix[i+1] = uint8(c.R)
-	p.Pix[i+2] = uint8(c.G >> 8)
-	p.Pix[i+3] = uint8(c.G)
-	p.Pix[i+4] = uint8(c.B >> 8)
-	p.Pix[i+5] = uint8(c.B)
+	p.Pix[i+0] = uint8(c[0] >> 8)
+	p.Pix[i+1] = uint8(c[0])
+	p.Pix[i+2] = uint8(c[1] >> 8)
+	p.Pix[i+3] = uint8(c[1])
+	p.Pix[i+4] = uint8(c[2] >> 8)
+	p.Pix[i+5] = uint8(c[2])
 	return
 }
 
@@ -142,10 +135,10 @@ func NewRGB48ImageFrom(m image.Image) *RGB48Image {
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			pr, pg, pb, _ := m.At(x, y).RGBA()
-			rgb.SetRGB48(x, y, RGB48Color{
-				R: uint16(pr),
-				G: uint16(pg),
-				B: uint16(pb),
+			rgb.SetRGB48(x, y, [3]uint16{
+				uint16(pr),
+				uint16(pg),
+				uint16(pb),
 			})
 		}
 	}
