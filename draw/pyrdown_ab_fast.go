@@ -45,6 +45,18 @@ func abPyrDownFast(dst draw.Image, r image.Rectangle, src image.Image, sp image.
 			abPyrDown_Gray16_RGBA64(dst, r, src, sp)
 			return
 		}
+	case *ximage.RGBImage:
+		switch src := src.(type) {
+		case *ximage.RGBImage:
+			abPyrDown_RGB_RGB(dst, r, src, sp)
+			return
+		}
+	case *ximage.RGB48Image:
+		switch src := src.(type) {
+		case *ximage.RGB48Image:
+			abPyrDown_RGB48_RGB48(dst, r, src, sp)
+			return
+		}
 	case *image.RGBA:
 		switch src := src.(type) {
 		case *image.Gray:
@@ -346,6 +358,86 @@ func abPyrDown_Gray16_RGBA64(dst *image.Gray16, r image.Rectangle, src *image.RG
 			vxx := uint16((299*rxx + 587*gxx + 114*bxx + 500) / 1000)
 			dstLineX[i+0] = uint8(vxx >> 8)
 			dstLineX[i+1] = uint8(vxx)
+		}
+
+		off0 += dst.Stride * 1
+		off1 += src.Stride * 2
+		off2 += src.Stride * 2
+	}
+}
+
+func abPyrDown_RGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, sp image.Point) {
+	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
+	off1 := src.PixOffset(sp.X, sp.Y)
+	off2 := off1 + src.Stride
+
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		dstLineX := dst.Pix[off0:][:r.Dx()*3*1]
+		srcLine0 := src.Pix[off1:][:r.Dx()*3*2]
+		srcLine1 := src.Pix[off2:][:r.Dx()*3*2]
+
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+3*1, j+3*2 {
+			r00 := srcLine0[j+0]
+			g00 := srcLine0[j+1]
+			b00 := srcLine0[j+2]
+
+			r01 := srcLine0[j+3]
+			g01 := srcLine0[j+4]
+			b01 := srcLine0[j+5]
+
+			r10 := srcLine1[j+0]
+			g10 := srcLine1[j+1]
+			b10 := srcLine1[j+2]
+
+			r11 := srcLine1[j+3]
+			g11 := srcLine1[j+4]
+			b11 := srcLine1[j+5]
+
+			dstLineX[i+0] = uint8(((uint32(r00) + uint32(r01) + uint32(r10) + uint32(r11)) * 0x101) >> 10)
+			dstLineX[i+1] = uint8(((uint32(g00) + uint32(g01) + uint32(g10) + uint32(g11)) * 0x101) >> 10)
+			dstLineX[i+2] = uint8(((uint32(b00) + uint32(b01) + uint32(b10) + uint32(b11)) * 0x101) >> 10)
+		}
+
+		off0 += dst.Stride * 1
+		off1 += src.Stride * 2
+		off2 += src.Stride * 2
+	}
+}
+
+func abPyrDown_RGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB48Image, sp image.Point) {
+	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
+	off1 := src.PixOffset(sp.X, sp.Y)
+	off2 := off1 + src.Stride
+
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		dstLineX := dst.Pix[off0:][:r.Dx()*6*1]
+		srcLine0 := src.Pix[off1:][:r.Dx()*6*2]
+		srcLine1 := src.Pix[off2:][:r.Dx()*6*2]
+
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+6*1, j+6*2 {
+			r00 := uint32(srcLine0[j+8*0+0])<<8 | uint32(srcLine0[j+8*0+1])
+			g00 := uint32(srcLine0[j+8*0+2])<<8 | uint32(srcLine0[j+8*0+3])
+			b00 := uint32(srcLine0[j+8*0+4])<<8 | uint32(srcLine0[j+8*0+5])
+			r01 := uint32(srcLine0[j+8*1+0])<<8 | uint32(srcLine0[j+8*1+1])
+			g01 := uint32(srcLine0[j+8*1+2])<<8 | uint32(srcLine0[j+8*1+3])
+			b01 := uint32(srcLine0[j+8*1+4])<<8 | uint32(srcLine0[j+8*1+5])
+			r10 := uint32(srcLine1[j+8*0+0])<<8 | uint32(srcLine1[j+8*0+1])
+			g10 := uint32(srcLine1[j+8*0+2])<<8 | uint32(srcLine1[j+8*0+3])
+			b10 := uint32(srcLine1[j+8*0+4])<<8 | uint32(srcLine1[j+8*0+5])
+			r11 := uint32(srcLine1[j+8*1+0])<<8 | uint32(srcLine1[j+8*1+1])
+			g11 := uint32(srcLine1[j+8*1+2])<<8 | uint32(srcLine1[j+8*1+3])
+			b11 := uint32(srcLine1[j+8*1+4])<<8 | uint32(srcLine1[j+8*1+5])
+
+			rxx := uint16((r00 + r01 + r10 + r11) >> 2)
+			gxx := uint16((g00 + g01 + g10 + g11) >> 2)
+			bxx := uint16((b00 + b01 + b10 + b11) >> 2)
+
+			dstLineX[i+0] = uint8(rxx >> 8)
+			dstLineX[i+1] = uint8(rxx)
+			dstLineX[i+2] = uint8(gxx >> 8)
+			dstLineX[i+3] = uint8(gxx)
+			dstLineX[i+4] = uint8(bxx >> 8)
+			dstLineX[i+5] = uint8(bxx)
 		}
 
 		off0 += dst.Stride * 1

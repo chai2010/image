@@ -45,6 +45,18 @@ func drawFast(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point
 			drawGray16_YCbCr(dst, r, src, sp)
 			return
 		}
+	case *ximage.RGBImage:
+		switch src := src.(type) {
+		case *ximage.RGBImage:
+			drawRGB_RGB(dst, r, src, sp)
+			return
+		}
+	case *ximage.RGB48Image:
+		switch src := src.(type) {
+		case *ximage.RGB48Image:
+			drawRGB48_RGB48(dst, r, src, sp)
+			return
+		}
 	case *image.RGBA:
 		switch src := src.(type) {
 		case *image.RGBA:
@@ -199,6 +211,30 @@ func drawGray16_YCbCr(dst *image.Gray16, r image.Rectangle, src *image.YCbCr, sp
 			off0 += 2
 			off1 += 1
 		}
+	}
+}
+
+func drawRGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, sp image.Point) {
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		off0 := dst.PixOffset(r.Min.X, y)
+		off1 := src.PixOffset(sp.X, y)
+
+		dstLine := dst.Pix[off0:][:r.Dx()*1*3]
+		srcLine := src.Pix[off1:][:r.Dx()*1*3]
+
+		copy(dstLine, srcLine)
+	}
+}
+
+func drawRGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB48Image, sp image.Point) {
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		off0 := dst.PixOffset(r.Min.X, y)
+		off1 := src.PixOffset(sp.X, y)
+
+		dstLine := dst.Pix[off0:][:r.Dx()*2*3]
+		srcLine := src.Pix[off1:][:r.Dx()*2*3]
+
+		copy(dstLine, srcLine)
 	}
 }
 
