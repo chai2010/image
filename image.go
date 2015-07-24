@@ -412,8 +412,6 @@ func SizeofImage(m image.Image) int {
 		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*1
 	case *image.Alpha16:
 		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*2
-	case *image.CMYK:
-		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*4
 	case *image.Gray:
 		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*1
 	case *image.Gray16:
@@ -426,8 +424,6 @@ func SizeofImage(m image.Image) int {
 		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*4
 	case *image.RGBA64:
 		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*8
-	case *image.Rectangle:
-		return int(unsafe.Sizeof(*m))
 	case *image.Uniform:
 		return int(unsafe.Sizeof(*m))
 	case *image.YCbCr:
