@@ -4,6 +4,37 @@
 
 package pyramid
 
+import (
+	"fmt"
+	"image"
+)
+
+func PyramidLevels(imageSize image.Point, tileSize image.Point) int {
+	if v := imageSize; v.X <= 0 || v.Y <= 0 {
+		panic(fmt.Errorf("image/pyramid: PyramidLevels, imageSize = %v", imageSize))
+	}
+	if v := tileSize; v.X <= 0 || v.Y <= 0 {
+		panic(fmt.Errorf("image/pyramid: PyramidLevels, tileSize = %v", tileSize))
+	}
+
+	xLevels := 0
+	for i := 0; ; i++ {
+		if x := (tileSize.X << uint8(i)); x >= imageSize.X {
+			xLevels = i + 1
+			break
+		}
+	}
+	yLevels := 0
+	for i := 0; ; i++ {
+		if y := (tileSize.Y << uint8(i)); y >= imageSize.Y {
+			yLevels = i + 1
+			break
+		}
+	}
+
+	return maxInt(xLevels, yLevels)
+}
+
 func minInt(a, b int) int {
 	if a <= b {
 		return a
