@@ -12,12 +12,14 @@ import (
 	"unsafe"
 )
 
+type tUnknownPix []byte
+
 type tUnknown struct {
 	MemPMagic string // MemP
 	Rect      image.Rectangle
 	Channels  int
 	DataType  reflect.Kind
-	Pix       []byte
+	Pix       tUnknownPix
 
 	// Stride is the Pix stride (in bytes, must align with PixelSize)
 	// between vertically adjacent pixels.

@@ -100,7 +100,11 @@ func AsMemPImage(m interface{}) (p *Image, ok bool) {
 		if mField.Kind() != pField.Kind() {
 			return nil, false
 		}
-		pField.Set(mField)
+		if mField.Kind() == reflect.Slice {
+			pField.SetBytes(mField.Bytes())
+		} else {
+			pField.Set(mField)
+		}
 	}
 
 	if p.MemPMagic != MemPMagic {
