@@ -405,19 +405,19 @@ func drawRGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, src *image.YCbCr, sp
 	}
 }
 
-func drawImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
-	if dst.Channels != src.Channels || dst.DataType != src.DataType {
+func drawImage(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
+	if dst.XChannels != src.XChannels || dst.XDataType != src.XDataType {
 		xdraw.Draw(dst, r, src, sp, xdraw.Src)
 		return
 	}
 
-	dxSize := ximage.SizeofPixel(dst.Channels, dst.DataType) * r.Dx()
+	dxSize := ximage.SizeofPixel(dst.XChannels, dst.XDataType) * r.Dx()
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
 		off1 := src.PixOffset(sp.X, y)
 
-		dstLine := dst.Pix[off0:][:dxSize]
-		srcLine := src.Pix[off1:][:dxSize]
+		dstLine := dst.XPix[off0:][:dxSize]
+		srcLine := src.XPix[off1:][:dxSize]
 
 		copy(dstLine, srcLine)
 	}

@@ -129,8 +129,8 @@ func nnPyrDownRGBA64(dst *image.RGBA64, r image.Rectangle, src *image.RGBA64, sp
 	}
 }
 
-func nnPyrDownImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
-	if dst.Channels != src.Channels || dst.DataType != src.DataType {
+func nnPyrDownImage(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
+	if dst.XChannels != src.XChannels || dst.XDataType != src.XDataType {
 		xdraw.NearestNeighbor.Scale(
 			dst, r,
 			src, image.Rect(sp.X, sp.Y, sp.X+r.Dx()/2, sp.Y+r.Dy()/2),
@@ -141,11 +141,11 @@ func nnPyrDownImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp 
 
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	pixSize := ximage.SizeofPixel(dst.Channels, dst.DataType)
+	pixSize := ximage.SizeofPixel(dst.XChannels, dst.XDataType)
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLine := dst.Pix[off0:][:r.Dx()*pixSize*1]
-		srcLine := src.Pix[off1:][:r.Dx()*pixSize*2]
+		dstLine := dst.XPix[off0:][:r.Dx()*pixSize*1]
+		srcLine := src.XPix[off1:][:r.Dx()*pixSize*2]
 
 		switch pixSize {
 		case 1:
@@ -181,7 +181,7 @@ func nnPyrDownImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp 
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
 	}
 }

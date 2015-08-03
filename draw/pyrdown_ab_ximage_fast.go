@@ -11,13 +11,13 @@ import (
 	ximage "github.com/chai2010/image"
 )
 
-func abPyrDown_xImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
-	if dst.Channels != src.Channels || dst.DataType != src.DataType {
+func abPyrDown_xImage(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
+	if dst.XChannels != src.XChannels || dst.XDataType != src.XDataType {
 		abPyrDownImage(dst, r, src, sp)
 		return
 	}
 
-	switch dst.DataType {
+	switch dst.XDataType {
 	case reflect.Int8:
 		abPyrDown_xImage_int8(dst, r, src, sp)
 		return
@@ -60,18 +60,18 @@ func abPyrDown_xImage(dst *ximage.Image, r image.Rectangle, src *ximage.Image, s
 	return
 }
 
-func abPyrDown_xImage_int8(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_int8(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*1*dst.Channels*1].Int8s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*1*dst.Channels*2].Int8s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*1*dst.Channels*2].Int8s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*1*dst.XChannels*1].Int8s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*1*dst.XChannels*2].Int8s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*1*dst.XChannels*2].Int8s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := int16(srcLine0[j+0])
 				v01 := int16(srcLine0[j+1])
 				v10 := int16(srcLine1[j+0])
@@ -80,24 +80,24 @@ func abPyrDown_xImage_int8(dst *ximage.Image, r image.Rectangle, src *ximage.Ima
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_int16(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_int16(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*2*dst.Channels*1].Int16s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*2*dst.Channels*2].Int16s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*2*dst.Channels*2].Int16s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*2*dst.XChannels*1].Int16s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*2*dst.XChannels*2].Int16s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*2*dst.XChannels*2].Int16s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := int32(srcLine0[j+0])
 				v01 := int32(srcLine0[j+1])
 				v10 := int32(srcLine1[j+0])
@@ -106,24 +106,24 @@ func abPyrDown_xImage_int16(dst *ximage.Image, r image.Rectangle, src *ximage.Im
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_int32(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_int32(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*4*dst.Channels*1].Int32s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Int32s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Int32s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*4*dst.XChannels*1].Int32s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Int32s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Int32s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := int64(srcLine0[j+0])
 				v01 := int64(srcLine0[j+1])
 				v10 := int64(srcLine1[j+0])
@@ -132,24 +132,24 @@ func abPyrDown_xImage_int32(dst *ximage.Image, r image.Rectangle, src *ximage.Im
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_int64(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_int64(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*8*dst.Channels*1].Int64s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Int64s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Int64s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*8*dst.XChannels*1].Int64s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Int64s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Int64s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := int64(srcLine0[j+0])
 				v01 := int64(srcLine0[j+1])
 				v10 := int64(srcLine1[j+0])
@@ -158,24 +158,24 @@ func abPyrDown_xImage_int64(dst *ximage.Image, r image.Rectangle, src *ximage.Im
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_uint8(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_uint8(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*1*dst.Channels*1].Uint8s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*1*dst.Channels*2].Uint8s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*1*dst.Channels*2].Uint8s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*1*dst.XChannels*1].Uint8s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*1*dst.XChannels*2].Uint8s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*1*dst.XChannels*2].Uint8s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := uint16(srcLine0[j+0])
 				v01 := uint16(srcLine0[j+1])
 				v10 := uint16(srcLine1[j+0])
@@ -184,24 +184,24 @@ func abPyrDown_xImage_uint8(dst *ximage.Image, r image.Rectangle, src *ximage.Im
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_uint16(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_uint16(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*2*dst.Channels*1].Uint16s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*2*dst.Channels*2].Uint16s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*2*dst.Channels*2].Uint16s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*2*dst.XChannels*1].Uint16s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*2*dst.XChannels*2].Uint16s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*2*dst.XChannels*2].Uint16s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := uint32(srcLine0[j+0])
 				v01 := uint32(srcLine0[j+1])
 				v10 := uint32(srcLine1[j+0])
@@ -210,24 +210,24 @@ func abPyrDown_xImage_uint16(dst *ximage.Image, r image.Rectangle, src *ximage.I
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_uint32(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_uint32(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*4*dst.Channels*1].Uint32s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Uint32s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Uint32s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*4*dst.XChannels*1].Uint32s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Uint32s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Uint32s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := uint64(srcLine0[j+0])
 				v01 := uint64(srcLine0[j+1])
 				v10 := uint64(srcLine1[j+0])
@@ -236,24 +236,24 @@ func abPyrDown_xImage_uint32(dst *ximage.Image, r image.Rectangle, src *ximage.I
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_uint64(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_uint64(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*8*dst.Channels*1].Uint64s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Uint64s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Uint64s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*8*dst.XChannels*1].Uint64s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Uint64s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Uint64s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := uint64(srcLine0[j+0])
 				v01 := uint64(srcLine0[j+1])
 				v10 := uint64(srcLine1[j+0])
@@ -262,22 +262,22 @@ func abPyrDown_xImage_uint64(dst *ximage.Image, r image.Rectangle, src *ximage.I
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_float32(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_float32(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
-	if dst.Channels == 1 {
+	if dst.XChannels == 1 {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			dstLineX := dst.Pix[off0:][:r.Dx()*4*dst.Channels*1].Float32s()
-			srcLine0 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Float32s()
-			srcLine1 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Float32s()
+			dstLineX := dst.XPix[off0:][:r.Dx()*4*dst.XChannels*1].Float32s()
+			srcLine0 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Float32s()
+			srcLine1 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Float32s()
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+1, j+2 {
 				v00 := float32(srcLine0[j+0])
@@ -287,18 +287,18 @@ func abPyrDown_xImage_float32(dst *ximage.Image, r image.Rectangle, src *ximage.
 				dstLineX[i] = float32((v00 + v01 + v10 + v11) / 4)
 			}
 
-			off0 += dst.Stride * 1
-			off1 += src.Stride * 2
-			off2 += src.Stride * 2
+			off0 += dst.XStride * 1
+			off1 += src.XStride * 2
+			off2 += src.XStride * 2
 		}
 	} else {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			dstLineX := dst.Pix[off0:][:r.Dx()*4*dst.Channels*1].Float32s()
-			srcLine0 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Float32s()
-			srcLine1 := src.Pix[off1:][:r.Dx()*4*dst.Channels*2].Float32s()
+			dstLineX := dst.XPix[off0:][:r.Dx()*4*dst.XChannels*1].Float32s()
+			srcLine0 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Float32s()
+			srcLine1 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Float32s()
 
-			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-				for k := 0; k < dst.Channels; k++ {
+			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+				for k := 0; k < dst.XChannels; k++ {
 					v00 := float32(srcLine0[j+0])
 					v01 := float32(srcLine0[j+1])
 					v10 := float32(srcLine1[j+0])
@@ -307,23 +307,23 @@ func abPyrDown_xImage_float32(dst *ximage.Image, r image.Rectangle, src *ximage.
 				}
 			}
 
-			off0 += dst.Stride * 1
-			off1 += src.Stride * 2
-			off2 += src.Stride * 2
+			off0 += dst.XStride * 1
+			off1 += src.XStride * 2
+			off2 += src.XStride * 2
 		}
 	}
 }
 
-func abPyrDown_xImage_float64(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_float64(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
-	if dst.Channels == 1 {
+	if dst.XChannels == 1 {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			dstLineX := dst.Pix[off0:][:r.Dx()*8*dst.Channels*1].Float64s()
-			srcLine0 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Float64s()
-			srcLine1 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Float64s()
+			dstLineX := dst.XPix[off0:][:r.Dx()*8*dst.XChannels*1].Float64s()
+			srcLine0 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Float64s()
+			srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Float64s()
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+1, j+2 {
 				v00 := float64(srcLine0[j+0])
@@ -333,18 +333,18 @@ func abPyrDown_xImage_float64(dst *ximage.Image, r image.Rectangle, src *ximage.
 				dstLineX[i] = float64((v00 + v01 + v10 + v11) / 4)
 			}
 
-			off0 += dst.Stride * 1
-			off1 += src.Stride * 2
-			off2 += src.Stride * 2
+			off0 += dst.XStride * 1
+			off1 += src.XStride * 2
+			off2 += src.XStride * 2
 		}
 	} else {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			dstLineX := dst.Pix[off0:][:r.Dx()*8*dst.Channels*1].Float64s()
-			srcLine0 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Float64s()
-			srcLine1 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Float64s()
+			dstLineX := dst.XPix[off0:][:r.Dx()*8*dst.XChannels*1].Float64s()
+			srcLine0 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Float64s()
+			srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Float64s()
 
-			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-				for k := 0; k < dst.Channels; k++ {
+			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+				for k := 0; k < dst.XChannels; k++ {
 					v00 := float64(srcLine0[j+0])
 					v01 := float64(srcLine0[j+1])
 					v10 := float64(srcLine1[j+0])
@@ -353,25 +353,25 @@ func abPyrDown_xImage_float64(dst *ximage.Image, r image.Rectangle, src *ximage.
 				}
 			}
 
-			off0 += dst.Stride * 1
-			off1 += src.Stride * 2
-			off2 += src.Stride * 2
+			off0 += dst.XStride * 1
+			off1 += src.XStride * 2
+			off2 += src.XStride * 2
 		}
 	}
 }
 
-func abPyrDown_xImage_complex64(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_complex64(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*8*dst.Channels*1].Complex64s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Complex64s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*8*dst.Channels*2].Complex64s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*8*dst.XChannels*1].Complex64s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Complex64s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Complex64s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := srcLine0[j+0]
 				v01 := srcLine0[j+1]
 				v10 := srcLine1[j+0]
@@ -380,24 +380,24 @@ func abPyrDown_xImage_complex64(dst *ximage.Image, r image.Rectangle, src *ximag
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
-func abPyrDown_xImage_complex128(dst *ximage.Image, r image.Rectangle, src *ximage.Image, sp image.Point) {
+func abPyrDown_xImage_complex128(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*16*dst.Channels*1].Complex128s()
-		srcLine0 := src.Pix[off1:][:r.Dx()*16*dst.Channels*2].Complex128s()
-		srcLine1 := src.Pix[off1:][:r.Dx()*16*dst.Channels*2].Complex128s()
+		dstLineX := dst.XPix[off0:][:r.Dx()*16*dst.XChannels*1].Complex128s()
+		srcLine0 := src.XPix[off1:][:r.Dx()*16*dst.XChannels*2].Complex128s()
+		srcLine1 := src.XPix[off1:][:r.Dx()*16*dst.XChannels*2].Complex128s()
 
-		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.Channels*1, j+dst.Channels*2 {
-			for k := 0; k < dst.Channels; k++ {
+		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
+			for k := 0; k < dst.XChannels; k++ {
 				v00 := srcLine0[j+0]
 				v01 := srcLine0[j+1]
 				v10 := srcLine1[j+0]
@@ -406,8 +406,8 @@ func abPyrDown_xImage_complex128(dst *ximage.Image, r image.Rectangle, src *xima
 			}
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }

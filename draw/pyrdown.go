@@ -35,7 +35,7 @@ func newPyrDownImage(m image.Image) draw.Image {
 	}
 
 	if m, ok := ximage.AsMemPImage(m); ok {
-		return ximage.NewImage(r, m.Channels, m.DataType)
+		return ximage.NewMemPImage(r, m.XChannels, m.XDataType)
 	}
 
 	// unknown
