@@ -369,12 +369,12 @@ func abPyrDown_Gray16_RGBA64(dst *image.Gray16, r image.Rectangle, src *image.RG
 func abPyrDown_RGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*3*1]
-		srcLine0 := src.Pix[off1:][:r.Dx()*3*2]
-		srcLine1 := src.Pix[off2:][:r.Dx()*3*2]
+		dstLineX := dst.XPix[off0:][:r.Dx()*3*1]
+		srcLine0 := src.XPix[off1:][:r.Dx()*3*2]
+		srcLine1 := src.XPix[off2:][:r.Dx()*3*2]
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+3*1, j+3*2 {
 			r00 := srcLine0[j+0]
@@ -398,21 +398,21 @@ func abPyrDown_RGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBI
 			dstLineX[i+2] = uint8(((uint32(b00) + uint32(b01) + uint32(b10) + uint32(b11)) * 0x101) >> 10)
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 
 func abPyrDown_RGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB48Image, sp image.Point) {
 	off0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	off1 := src.PixOffset(sp.X, sp.Y)
-	off2 := off1 + src.Stride
+	off2 := off1 + src.XStride
 
 	for y := r.Min.Y; y < r.Max.Y; y++ {
-		dstLineX := dst.Pix[off0:][:r.Dx()*6*1]
-		srcLine0 := src.Pix[off1:][:r.Dx()*6*2]
-		srcLine1 := src.Pix[off2:][:r.Dx()*6*2]
+		dstLineX := dst.XPix[off0:][:r.Dx()*6*1]
+		srcLine0 := src.XPix[off1:][:r.Dx()*6*2]
+		srcLine1 := src.XPix[off2:][:r.Dx()*6*2]
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+6*1, j+6*2 {
 			r00 := uint32(srcLine0[j+8*0+0])<<8 | uint32(srcLine0[j+8*0+1])
@@ -440,9 +440,9 @@ func abPyrDown_RGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximag
 			dstLineX[i+5] = uint8(bxx)
 		}
 
-		off0 += dst.Stride * 1
-		off1 += src.Stride * 2
-		off2 += src.Stride * 2
+		off0 += dst.XStride * 1
+		off1 += src.XStride * 2
+		off2 += src.XStride * 2
 	}
 }
 

@@ -219,8 +219,8 @@ func drawRGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, 
 		off0 := dst.PixOffset(r.Min.X, y)
 		off1 := src.PixOffset(sp.X, y)
 
-		dstLine := dst.Pix[off0:][:r.Dx()*1*3]
-		srcLine := src.Pix[off1:][:r.Dx()*1*3]
+		dstLine := dst.XPix[off0:][:r.Dx()*1*3]
+		srcLine := src.XPix[off1:][:r.Dx()*1*3]
 
 		copy(dstLine, srcLine)
 	}
@@ -231,8 +231,8 @@ func drawRGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB4
 		off0 := dst.PixOffset(r.Min.X, y)
 		off1 := src.PixOffset(sp.X, y)
 
-		dstLine := dst.Pix[off0:][:r.Dx()*2*3]
-		srcLine := src.Pix[off1:][:r.Dx()*2*3]
+		dstLine := dst.XPix[off0:][:r.Dx()*2*3]
+		srcLine := src.XPix[off1:][:r.Dx()*2*3]
 
 		copy(dstLine, srcLine)
 	}
