@@ -11,7 +11,7 @@
 //		Channels() int
 //		DataType() reflect.Kind
 //		Pix() (pix []byte, isCBuf bool) // pix is PixSilce type
-//	
+//
 //		// Stride is the Pix stride (in bytes, must align with SizeofKind(p.DataType))
 //		// between vertically adjacent pixels.
 //		Stride() int

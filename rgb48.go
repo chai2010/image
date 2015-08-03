@@ -7,97 +7,121 @@ package image
 import (
 	"image"
 	"image/color"
+	"reflect"
 )
 
 var (
 	_ image.Image = (*RGB48Image)(nil)
+	_ MemP        = (*RGB48Image)(nil)
 )
 
 type RGB48Image struct {
-	Pix    []uint8
-	Stride int
-	Rect   image.Rectangle
+	XPix    []uint8
+	XStride int
+	XRect   image.Rectangle
+}
+
+func (p *RGB48Image) MemPMagic() string {
+	return MemPMagic
+}
+
+func (p *RGB48Image) Bounds() image.Rectangle {
+	return p.XRect
+}
+
+func (p *RGB48Image) Channels() int {
+	return 3
+}
+
+func (p *RGB48Image) DataType() reflect.Kind {
+	return reflect.Uint16
+}
+
+func (p *RGB48Image) Pix() (pix []byte, isCBuf bool) {
+	return p.XPix, false
+}
+
+func (p *RGB48Image) Stride() int {
+	return p.XStride
 }
 
 func (p *RGB48Image) ColorModel() color.Model { return color.RGBA64Model }
 
-func (p *RGB48Image) Bounds() image.Rectangle { return p.Rect }
-
 func (p *RGB48Image) At(x, y int) color.Color {
-	if !(image.Point{x, y}.In(p.Rect)) {
+	if !(image.Point{x, y}.In(p.XRect)) {
 		return color.RGBA64{}
 	}
 	i := p.PixOffset(x, y)
 	return color.RGBA64{
-		R: uint16(p.Pix[i+0])<<8 | uint16(p.Pix[i+1]),
-		G: uint16(p.Pix[i+2])<<8 | uint16(p.Pix[i+3]),
-		B: uint16(p.Pix[i+4])<<8 | uint16(p.Pix[i+5]),
+		R: uint16(p.XPix[i+0])<<8 | uint16(p.XPix[i+1]),
+		G: uint16(p.XPix[i+2])<<8 | uint16(p.XPix[i+3]),
+		B: uint16(p.XPix[i+4])<<8 | uint16(p.XPix[i+5]),
 		A: 0xffff,
 	}
 }
 
 func (p *RGB48Image) RGB48At(x, y int) [3]uint16 {
-	if !(image.Point{x, y}.In(p.Rect)) {
+	if !(image.Point{x, y}.In(p.XRect)) {
 		return [3]uint16{}
 	}
 	i := p.PixOffset(x, y)
 	return [3]uint16{
-		uint16(p.Pix[i+0])<<8 | uint16(p.Pix[i+1]),
-		uint16(p.Pix[i+2])<<8 | uint16(p.Pix[i+3]),
-		uint16(p.Pix[i+4])<<8 | uint16(p.Pix[i+5]),
+		uint16(p.XPix[i+0])<<8 | uint16(p.XPix[i+1]),
+		uint16(p.XPix[i+2])<<8 | uint16(p.XPix[i+3]),
+		uint16(p.XPix[i+4])<<8 | uint16(p.XPix[i+5]),
 	}
 }
 
-// PixOffset returns the index of the first element of Pix that corresponds to
+// PixOffset returns the index of the first element of XPix that corresponds to
 // the pixel at (x, y).
 func (p *RGB48Image) PixOffset(x, y int) int {
-	return (y-p.Rect.Min.Y)*p.Stride + (x-p.Rect.Min.X)*3
+	return (y-p.XRect.Min.Y)*p.XStride + (x-p.XRect.Min.X)*3
 }
 
 func (p *RGB48Image) Set(x, y int, c color.Color) {
-	if !(image.Point{x, y}.In(p.Rect)) {
+	if !(image.Point{x, y}.In(p.XRect)) {
 		return
 	}
 	i := p.PixOffset(x, y)
 	c1 := color.RGBA64Model.Convert(c).(color.RGBA64)
-	p.Pix[i+0] = uint8(c1.R >> 8)
-	p.Pix[i+1] = uint8(c1.R)
-	p.Pix[i+2] = uint8(c1.G >> 8)
-	p.Pix[i+3] = uint8(c1.G)
-	p.Pix[i+4] = uint8(c1.B >> 8)
-	p.Pix[i+5] = uint8(c1.B)
+	p.XPix[i+0] = uint8(c1.R >> 8)
+	p.XPix[i+1] = uint8(c1.R)
+	p.XPix[i+2] = uint8(c1.G >> 8)
+	p.XPix[i+3] = uint8(c1.G)
+	p.XPix[i+4] = uint8(c1.B >> 8)
+	p.XPix[i+5] = uint8(c1.B)
 	return
 }
 
 func (p *RGB48Image) SetRGB48(x, y int, c [3]uint16) {
-	if !(image.Point{x, y}.In(p.Rect)) {
+	if !(image.Point{x, y}.In(p.XRect)) {
 		return
 	}
 	i := p.PixOffset(x, y)
-	p.Pix[i+0] = uint8(c[0] >> 8)
-	p.Pix[i+1] = uint8(c[0])
-	p.Pix[i+2] = uint8(c[1] >> 8)
-	p.Pix[i+3] = uint8(c[1])
-	p.Pix[i+4] = uint8(c[2] >> 8)
-	p.Pix[i+5] = uint8(c[2])
+	p.XPix[i+0] = uint8(c[0] >> 8)
+	p.XPix[i+1] = uint8(c[0])
+	p.XPix[i+2] = uint8(c[1] >> 8)
+	p.XPix[i+3] = uint8(c[1])
+	p.XPix[i+4] = uint8(c[2] >> 8)
+	p.XPix[i+5] = uint8(c[2])
 	return
 }
 
 // SubImage returns an image representing the portion of the image p visible
 // through r. The returned value shares pixels with the original image.
 func (p *RGB48Image) SubImage(r image.Rectangle) image.Image {
-	r = r.Intersect(p.Rect)
+	r = r.Intersect(p.XRect)
 	// If r1 and r2 are Rectangles, r1.Intersect(r2) is not guaranteed to be inside
 	// either r1 or r2 if the intersection is empty. Without explicitly checking for
-	// this, the Pix[i:] expression below can panic.
+	// this, the XPix[i:] expression below can panic.
 	if r.Empty() {
 		return &RGB48Image{}
 	}
 	i := p.PixOffset(r.Min.X, r.Min.Y)
 	return &RGB48Image{
-		Pix:    p.Pix[i:],
-		Stride: p.Stride,
-		Rect:   r,
+		XPix:    p.XPix[i:],
+		XStride: p.XStride,
+		XRect:   r,
 	}
 }
 
@@ -111,9 +135,9 @@ func NewRGB48Image(r image.Rectangle) *RGB48Image {
 	w, h := r.Dx(), r.Dy()
 	pix := make([]uint8, 6*w*h)
 	return &RGB48Image{
-		Pix:    pix,
-		Stride: 6 * w,
-		Rect:   r,
+		XPix:    pix,
+		XStride: 6 * w,
+		XRect:   r,
 	}
 }
 
