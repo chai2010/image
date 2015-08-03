@@ -18,12 +18,12 @@ func Decode(r io.Reader) (m image.Image, format string, err error) {
 	return image.Decode(r)
 }
 
-func DecodeImage(r io.Reader) (m *Image, format string, err error) {
+func DecodeImage(r io.Reader) (m *MemPImage, format string, err error) {
 	x, format, err := image.Decode(r)
 	if err != nil {
 		return nil, "", err
 	}
-	m = NewImageFrom(x)
+	m = NewMemPImageFrom(x)
 	return
 }
 
@@ -45,7 +45,7 @@ func Load(filename string) (m image.Image, format string, err error) {
 	return Decode(f)
 }
 
-func LoadImage(filename string) (m *Image, format string, err error) {
+func LoadImage(filename string) (m *MemPImage, format string, err error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, "", err
@@ -58,7 +58,7 @@ func LoadImage(filename string) (m *Image, format string, err error) {
 	}
 
 	if m, _ = AsMemPImage(x); m == nil {
-		m = NewImageFrom(x)
+		m = NewMemPImageFrom(x)
 	}
 	return m, format, nil
 }

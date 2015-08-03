@@ -117,11 +117,11 @@ func ExampleImage_rgb() {
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := ximage.NewImage(b, 3, reflect.Uint8)
+	rgbImage := ximage.NewMemPImage(b, 3, reflect.Uint8)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
-			line     []byte = rgbImage.Pix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.Stride]
+			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
 			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
@@ -141,11 +141,11 @@ func ExampleImage_rgb48() {
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := ximage.NewImage(b, 3, reflect.Uint16)
+	rgbImage := ximage.NewMemPImage(b, 3, reflect.Uint16)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
-			line     []byte = rgbImage.Pix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.Stride]
+			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
 			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 

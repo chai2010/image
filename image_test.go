@@ -15,34 +15,70 @@ import (
 type tUnknownPix []byte
 
 type tUnknown struct {
-	MemPMagic string // MemP
-	Rect      image.Rectangle
-	Channels  int
-	DataType  reflect.Kind
-	Pix       tUnknownPix
+	XMemPMagic string // MemP
+	XRect      image.Rectangle
+	XChannels  int
+	XDataType  reflect.Kind
+	XPix       tUnknownPix
 
 	// Stride is the Pix stride (in bytes, must align with PixelSize)
 	// between vertically adjacent pixels.
-	Stride int
+	XStride int
 }
 
-func (p *tUnknown) Equal(q *Image) bool {
-	if p.MemPMagic != q.MemPMagic {
+func tNewUnknown(r image.Rectangle, channels int, dataType reflect.Kind) *tUnknown {
+	m := &tUnknown{
+		XMemPMagic: MemPMagic,
+		XRect:      r,
+		XStride:    r.Dx() * channels * SizeofKind(dataType),
+		XChannels:  channels,
+		XDataType:  dataType,
+	}
+	m.XPix = make([]byte, r.Dy()*m.XStride)
+	return m
+}
+
+func (p *tUnknown) MemPMagic() string {
+	return p.XMemPMagic
+}
+
+func (p *tUnknown) Bounds() image.Rectangle {
+	return p.XRect
+}
+
+func (p *tUnknown) Channels() int {
+	return p.XChannels
+}
+
+func (p *tUnknown) DataType() reflect.Kind {
+	return p.XDataType
+}
+
+func (p *tUnknown) Pix() (pix []byte, cPtr unsafe.Pointer) {
+	return p.XPix, nil
+}
+
+func (p *tUnknown) Stride() int {
+	return p.XStride
+}
+
+func (p *tUnknown) Equal(q *MemPImage) bool {
+	if p.XMemPMagic != q.XMemPMagic {
 		return false
 	}
-	if p.Rect != q.Rect {
+	if p.XRect != q.XRect {
 		return false
 	}
-	if p.Channels != q.Channels {
+	if p.XChannels != q.XChannels {
 		return false
 	}
-	if p.DataType != q.DataType {
+	if p.XDataType != q.XDataType {
 		return false
 	}
-	if !bytes.Equal(p.Pix, q.Pix) {
+	if !bytes.Equal(p.XPix, q.XPix) {
 		return false
 	}
-	if p.Stride != q.Stride {
+	if p.XStride != q.XStride {
 		return false
 	}
 	return true
@@ -54,16 +90,11 @@ func TestImage(t *testing.T) {
 
 func TestImage_Unsafe(t *testing.T) {
 	b := image.Rect(0, 0, 300, 400)
-	m1 := (*tUnknown)(unsafe.Pointer(NewImage(b, 3, reflect.Uint8)))
-	m2, _ := AsMemPImage(m1)
-	m3, _ := AsMemPImage(*m1)
+	m1 := tNewUnknown(b, 3, reflect.Uint8)
+	m2 := NewMemPImage(b, 3, reflect.Uint8)
 
 	if !m1.Equal(m2) {
-		m1.Pix, m2.Pix = nil, nil
+		m1.XPix, m2.XPix = nil, nil
 		t.Fatalf("not equal: %v != %v", m1, m2)
-	}
-	if !m1.Equal(m3) {
-		m1.Pix, m3.Pix = nil, nil
-		t.Fatalf("not equal: %v != %v", m1, m3)
 	}
 }

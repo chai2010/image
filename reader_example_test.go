@@ -30,10 +30,10 @@ func ExampleLoadImage() {
 	}
 
 	fmt.Printf("format = %v\n", format)
-	fmt.Printf("MemPMagic = %v\n", m.MemPMagic)
-	fmt.Printf("Rect = %v\n", m.Rect)
-	fmt.Printf("Channels = %v\n", m.Channels)
-	fmt.Printf("DataType = %v\n", m.DataType)
+	fmt.Printf("MemPMagic = %v\n", m.XMemPMagic)
+	fmt.Printf("Rect = %v\n", m.XRect)
+	fmt.Printf("Channels = %v\n", m.XChannels)
+	fmt.Printf("DataType = %v\n", m.XDataType)
 	// Output:
 	// format = png
 	// MemPMagic = MemP
