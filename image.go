@@ -63,7 +63,7 @@ func NewMemPImage(r image.Rectangle, channels int, dataType reflect.Kind) *MemPI
 	return m
 }
 
-func AsMemPImage(m interface{}) (p *MemPImage, ok bool) {
+func AsMemPImage(m interface{ /* MemP or image.Image */ }) (p *MemPImage, ok bool) {
 	if m, ok := m.(*MemPImage); ok {
 		return m, true
 	}
