@@ -4,17 +4,17 @@
 
 // Package image define a Memory format picture.
 //
-// MemP Image Structs (Native Endian):
-//	type Image struct {
-//		MemPMagic    string // MemP
-//		Rect         image.Rectangle
-//		Channels     int
-//		DataType     reflect.Kind
-//		Pix          PixSilce
-//
+// MemP Image Spec (Native Endian), see https://github.com/chai2010/image.
+//	type MemP interface {
+//		MemPMagic() string
+//		Bounds() image.Rectangle
+//		Channels() int
+//		DataType() reflect.Kind
+//		Pix() (pix []byte, isCBuf bool) // pix is PixSilce type
+//	
 //		// Stride is the Pix stride (in bytes, must align with SizeofKind(p.DataType))
 //		// between vertically adjacent pixels.
-//		Stride int
+//		Stride() int
 //	}
 //
 // Please report bugs to chaishushan{AT}gmail.com.

@@ -3,16 +3,17 @@
 MemP Image Spec (Native Endian):
 
 ```Go
-type Image struct {
-	MemPMagic string // MemP, see https://github.com/chai2010/image
-	Rect      image.Rectangle
-	Channels  int
-	DataType  reflect.Kind
-	Pix       PixSilce
+// MemP Image Spec (Native Endian), see https://github.com/chai2010/image.
+type MemP interface {
+	MemPMagic() string
+	Bounds() image.Rectangle
+	Channels() int
+	DataType() reflect.Kind
+	Pix() (pix []byte, isCBuf bool) // pix is PixSilce type
 
 	// Stride is the Pix stride (in bytes, must align with SizeofKind(p.DataType))
 	// between vertically adjacent pixels.
-	Stride int
+	Stride() int
 }
 ```
 

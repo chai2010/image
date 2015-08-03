@@ -28,7 +28,7 @@ var (
 	_ MemP        = (*MemPImage)(nil)
 )
 
-// MemP Image Spec (Native Endian), see https://github.com/chai2010/image#MemP.
+// MemP Image Spec (Native Endian), see https://github.com/chai2010/image.
 type MemP interface {
 	MemPMagic() string
 	Bounds() image.Rectangle
