@@ -34,7 +34,7 @@ type MemP interface {
 	Bounds() image.Rectangle
 	Channels() int
 	DataType() reflect.Kind
-	Pix() (pix []byte, cPtr unsafe.Pointer) // cPtr is for C.free(cgoPtr), nil is no cgo object
+	Pix() (pix []byte, isCBuf bool) // pix is PixSilce type
 
 	// Stride is the Pix stride (in bytes, must align with SizeofKind(p.DataType))
 	// between vertically adjacent pixels.
@@ -47,7 +47,7 @@ type MemPImage struct {
 	XChannels  int
 	XDataType  reflect.Kind
 	XPix       PixSilce
-	XPixCPtr   unsafe.Pointer
+	XPixIsCBuf bool
 	XStride    int
 }
 
@@ -68,14 +68,14 @@ func AsMemPImage(m interface{}) (p *MemPImage, ok bool) {
 		return m, true
 	}
 	if m, ok := m.(MemP); ok {
-		pix, cPtr := m.Pix()
+		pix, isCBuf := m.Pix()
 		return &MemPImage{
 			XMemPMagic: MemPMagic,
 			XRect:      m.Bounds(),
 			XChannels:  m.Channels(),
 			XDataType:  m.DataType(),
 			XPix:       pix,
-			XPixCPtr:   cPtr,
+			XPixIsCBuf: isCBuf,
 			XStride:    m.Stride(),
 		}, true
 	}
@@ -86,7 +86,6 @@ func AsMemPImage(m interface{}) (p *MemPImage, ok bool) {
 			XChannels:  1,
 			XDataType:  reflect.Uint8,
 			XPix:       m.Pix,
-			XPixCPtr:   nil,
 			XStride:    m.Stride,
 		}, true
 	}
@@ -97,7 +96,6 @@ func AsMemPImage(m interface{}) (p *MemPImage, ok bool) {
 			XChannels:  4,
 			XDataType:  reflect.Uint8,
 			XPix:       m.Pix,
-			XPixCPtr:   nil,
 			XStride:    m.Stride,
 		}, true
 	}
@@ -232,8 +230,8 @@ func (p *MemPImage) DataType() reflect.Kind {
 	return p.XDataType
 }
 
-func (p *MemPImage) Pix() (pix []byte, cPtr unsafe.Pointer) {
-	return p.XPix, p.XPixCPtr
+func (p *MemPImage) Pix() (pix []byte, isCBuf bool) {
+	return p.XPix, p.XPixIsCBuf
 }
 
 func (p *MemPImage) Stride() int {
@@ -302,12 +300,12 @@ func (p *MemPImage) SubImage(r image.Rectangle) image.Image {
 	}
 	i := p.PixOffset(r.Min.X, r.Min.Y)
 	return &MemPImage{
-		XPix:      p.XPix[i:],
-		XPixCPtr:  p.XPixCPtr,
-		XStride:   p.XStride,
-		XRect:     r,
-		XChannels: p.XChannels,
-		XDataType: p.XDataType,
+		XPix:       p.XPix[i:],
+		XPixIsCBuf: p.XPixIsCBuf,
+		XStride:    p.XStride,
+		XRect:      r,
+		XChannels:  p.XChannels,
+		XDataType:  p.XDataType,
 	}
 }
 

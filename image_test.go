@@ -9,7 +9,10 @@ import (
 	"image"
 	"reflect"
 	"testing"
-	"unsafe"
+)
+
+var (
+	_ MemP = (*tUnknown)(nil)
 )
 
 type tUnknownPix []byte
@@ -54,8 +57,8 @@ func (p *tUnknown) DataType() reflect.Kind {
 	return p.XDataType
 }
 
-func (p *tUnknown) Pix() (pix []byte, cPtr unsafe.Pointer) {
-	return p.XPix, nil
+func (p *tUnknown) Pix() (pix []byte, isCBuf bool) {
+	return p.XPix, false
 }
 
 func (p *tUnknown) Stride() int {
