@@ -244,14 +244,14 @@ func (p *MemPImage) ColorModel() color.Model {
 
 func (p *MemPImage) At(x, y int) color.Color {
 	if !(image.Point{x, y}.In(p.XRect)) {
-		return Color{
+		return MemPColor{
 			Channels: p.XChannels,
 			DataType: p.XDataType,
 		}
 	}
 	i := p.PixOffset(x, y)
 	n := SizeofPixel(p.XChannels, p.XDataType)
-	return Color{
+	return MemPColor{
 		Channels: p.XChannels,
 		DataType: p.XDataType,
 		Pix:      p.XPix[i:][:n],
@@ -273,7 +273,7 @@ func (p *MemPImage) Set(x, y int, c color.Color) {
 	}
 	i := p.PixOffset(x, y)
 	n := SizeofPixel(p.XChannels, p.XDataType)
-	v := p.ColorModel().Convert(c).(Color)
+	v := p.ColorModel().Convert(c).(MemPColor)
 	copy(p.XPix[i:][:n], v.Pix)
 }
 

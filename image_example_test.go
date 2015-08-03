@@ -48,7 +48,7 @@ func ExamplePixSilce_SwapEndian() {
 }
 
 func ExampleColor() {
-	c := ximage.Color{
+	c := ximage.MemPColor{
 		Channels: 4,
 		DataType: reflect.Uint8,
 		Pix:      []byte{101, 102, 103, 104},
@@ -60,7 +60,7 @@ func ExampleColor() {
 }
 
 func ExampleColor_uint16() {
-	c := ximage.Color{
+	c := ximage.MemPColor{
 		Channels: 4,
 		DataType: reflect.Uint16,
 		Pix:      ximage.AsPixSilce([]uint16{11101, 11102, 11103, 11104}),
@@ -73,7 +73,7 @@ func ExampleColor_uint16() {
 
 func ExampleColorModel() {
 	rgba := color.RGBA{R: 101, G: 102, B: 103, A: 104}
-	c := ximage.ColorModel(4, reflect.Uint8).Convert(rgba).(ximage.Color)
+	c := ximage.ColorModel(4, reflect.Uint8).Convert(rgba).(ximage.MemPColor)
 	fmt.Printf("c = %v\n", c)
 	// Output:
 	// c = {4 uint8 [101 102 103 104]}
