@@ -57,8 +57,8 @@ func (p *tUnknown) DataType() reflect.Kind {
 	return p.XDataType
 }
 
-func (p *tUnknown) Pix() (pix []byte, isCBuf bool) {
-	return p.XPix, false
+func (p *tUnknown) Pix() []byte {
+	return p.XPix
 }
 
 func (p *tUnknown) Stride() int {
