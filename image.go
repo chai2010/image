@@ -416,7 +416,8 @@ func SizeofImage(m image.Image) int {
 		return m.SizeofImage()
 	}
 	if m, ok := AsMemPImage(m); ok {
-		return int(unsafe.Sizeof(*m)) + len(m.XPix)
+		b := m.Bounds()
+		return int(unsafe.Sizeof(*m)) + b.Dx()*b.Dy()*SizeofPixel(m.XChannels, m.XDataType)
 	}
 
 	b := m.Bounds()
