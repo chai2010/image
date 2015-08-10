@@ -5,6 +5,7 @@
 package image
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/gif"
@@ -17,6 +18,18 @@ import (
 )
 
 type Encoder func(w io.Writer, m image.Image) error
+
+// Encode image, if encoder is nil, use png format.
+func Encode(m image.Image, encoder Encoder) ([]byte, error) {
+	if encoder == nil {
+		encoder = png.Encode
+	}
+	b := bytes.NewBuffer([]byte{})
+	if err := encoder(b, m); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
 
 // Save image, if encoder is nil, only support gif/jpeg/png format.
 func Save(filename string, m image.Image, encoder Encoder) error {

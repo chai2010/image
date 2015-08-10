@@ -15,6 +15,34 @@ import (
 	ximage "."
 )
 
+func ExampleEncode_default() {
+	m, _, err := ximage.Load("./testdata/lena.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pngOut, err := ximage.Encode(m, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = pngOut
+}
+
+func ExampleEncode_user_defined() {
+	m, _, err := ximage.Load("./testdata/lena.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jpegOut, err := ximage.Encode(m, func(w io.Writer, m image.Image) error {
+		return jpeg.Encode(w, m, nil)
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = jpegOut
+}
+
 func ExampleSave_png() {
 	outfile := "zz_lena.png"
 	defer os.Remove(outfile)
