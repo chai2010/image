@@ -1,5 +1,8 @@
 # Image: Memory Picture
 
+[![Build Status](https://travis-ci.org/chai2010/image.svg)](https://travis-ci.org/chai2010/image)
+[![GoDoc](https://godoc.org/github.com/chai2010/image?status.svg)](https://godoc.org/github.com/chai2010/image)
+
 MemP Image Spec (Native Endian):
 
 ```Go
