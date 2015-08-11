@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package image_test
+package image
 
 import (
 	"fmt"
 	"image"
 	"image/color"
 	"reflect"
-
-	ximage "."
 )
 
 func ExamplePixSilce() {
 	a := []int32{101, 102, 103}
-	b := ximage.AsPixSilce(a)
+	b := AsPixSilce(a)
 
 	b.Int32s()[0] = 12345
 	b.SetValue(1, reflect.Int32, 1002)
@@ -39,7 +37,7 @@ func ExamplePixSilce_SwapEndian() {
 	// pix is big-endian format
 	fmt.Printf("big-endian: %v\n", rgba64.Pix)
 
-	ximage.AsPixSilce(rgba64.Pix).SwapEndian(reflect.Uint16)
+	AsPixSilce(rgba64.Pix).SwapEndian(reflect.Uint16)
 	fmt.Printf("little-endian: %v\n", rgba64.Pix)
 
 	// Output:
@@ -48,7 +46,7 @@ func ExamplePixSilce_SwapEndian() {
 }
 
 func ExampleColor() {
-	c := ximage.MemPColor{
+	c := MemPColor{
 		Channels: 4,
 		DataType: reflect.Uint8,
 		Pix:      []byte{101, 102, 103, 104},
@@ -60,10 +58,10 @@ func ExampleColor() {
 }
 
 func ExampleColor_uint16() {
-	c := ximage.MemPColor{
+	c := MemPColor{
 		Channels: 4,
 		DataType: reflect.Uint16,
-		Pix:      ximage.AsPixSilce([]uint16{11101, 11102, 11103, 11104}),
+		Pix:      AsPixSilce([]uint16{11101, 11102, 11103, 11104}),
 	}
 	rgba64 := color.RGBA64Model.Convert(c).(color.RGBA64)
 	fmt.Printf("rgba64 = %v\n", rgba64)
@@ -73,18 +71,18 @@ func ExampleColor_uint16() {
 
 func ExampleColorModel() {
 	rgba := color.RGBA{R: 101, G: 102, B: 103, A: 104}
-	c := ximage.ColorModel(4, reflect.Uint8).Convert(rgba).(ximage.MemPColor)
+	c := ColorModel(4, reflect.Uint8).Convert(rgba).(MemPColor)
 	fmt.Printf("c = %v\n", c)
 	// Output:
 	// c = {4 uint8 [101 102 103 104]}
 }
 
 func ExampleSizeofKind() {
-	fmt.Printf("%v = %v\n", reflect.Uint8, ximage.SizeofKind(reflect.Uint8))
-	fmt.Printf("%v = %v\n", reflect.Uint16, ximage.SizeofKind(reflect.Uint16))
-	fmt.Printf("%v = %v\n", reflect.Uint32, ximage.SizeofKind(reflect.Uint32))
-	fmt.Printf("%v = %v\n", reflect.Float32, ximage.SizeofKind(reflect.Float32))
-	fmt.Printf("%v = %v\n", reflect.Float64, ximage.SizeofKind(reflect.Float64))
+	fmt.Printf("%v = %v\n", reflect.Uint8, SizeofKind(reflect.Uint8))
+	fmt.Printf("%v = %v\n", reflect.Uint16, SizeofKind(reflect.Uint16))
+	fmt.Printf("%v = %v\n", reflect.Uint32, SizeofKind(reflect.Uint32))
+	fmt.Printf("%v = %v\n", reflect.Float32, SizeofKind(reflect.Float32))
+	fmt.Printf("%v = %v\n", reflect.Float64, SizeofKind(reflect.Float64))
 	// Output:
 	// uint8 = 1
 	// uint16 = 2
@@ -94,13 +92,13 @@ func ExampleSizeofKind() {
 }
 
 func ExampleSizeofPixel() {
-	fmt.Printf("sizeof(gray) = %d\n", ximage.SizeofPixel(1, reflect.Uint8))
-	fmt.Printf("sizeof(gray16) = %d\n", ximage.SizeofPixel(1, reflect.Uint16))
-	fmt.Printf("sizeof(rgb) = %d\n", ximage.SizeofPixel(3, reflect.Uint8))
-	fmt.Printf("sizeof(rgb48) = %d\n", ximage.SizeofPixel(3, reflect.Uint16))
-	fmt.Printf("sizeof(rgba) = %d\n", ximage.SizeofPixel(4, reflect.Uint8))
-	fmt.Printf("sizeof(rgba64) = %d\n", ximage.SizeofPixel(4, reflect.Uint16))
-	fmt.Printf("sizeof(float32) = %d\n", ximage.SizeofPixel(1, reflect.Float32))
+	fmt.Printf("sizeof(gray) = %d\n", SizeofPixel(1, reflect.Uint8))
+	fmt.Printf("sizeof(gray16) = %d\n", SizeofPixel(1, reflect.Uint16))
+	fmt.Printf("sizeof(rgb) = %d\n", SizeofPixel(3, reflect.Uint8))
+	fmt.Printf("sizeof(rgb48) = %d\n", SizeofPixel(3, reflect.Uint16))
+	fmt.Printf("sizeof(rgba) = %d\n", SizeofPixel(4, reflect.Uint8))
+	fmt.Printf("sizeof(rgba64) = %d\n", SizeofPixel(4, reflect.Uint16))
+	fmt.Printf("sizeof(float32) = %d\n", SizeofPixel(1, reflect.Float32))
 	// Output:
 	// sizeof(gray) = 1
 	// sizeof(gray16) = 2
@@ -117,12 +115,12 @@ func ExampleImage_rgb() {
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := ximage.NewMemPImage(b, 3, reflect.Uint8)
+	rgbImage := NewMemPImage(b, 3, reflect.Uint8)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
-			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
@@ -141,12 +139,12 @@ func ExampleImage_rgb48() {
 	}
 
 	b := image.Rect(0, 0, 300, 400)
-	rgbImage := ximage.NewMemPImage(b, 3, reflect.Uint16)
+	rgbImage := NewMemPImage(b, 3, reflect.Uint16)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
-			rgbSlice []RGB  = ximage.PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
@@ -160,7 +158,7 @@ func ExampleImage_rgb48() {
 }
 
 func ExampleImage_unsafe() {
-	// struct must same as ximage.Image
+	// struct must same as Image
 	type MyImage struct {
 		MemPMagic string // MemP
 		Rect      image.Rectangle
@@ -174,14 +172,14 @@ func ExampleImage_unsafe() {
 	}
 
 	p := &MyImage{
-		MemPMagic: ximage.MemPMagic,
+		MemPMagic: MemPMagic,
 		Rect:      image.Rect(0, 0, 300, 400),
 		Channels:  3,
 		DataType:  reflect.Uint16,
-		Pix:       make([]byte, 300*400*3*ximage.SizeofKind(reflect.Uint16)),
-		Stride:    300 * 3 * ximage.SizeofKind(reflect.Uint16),
+		Pix:       make([]byte, 300*400*3*SizeofKind(reflect.Uint16)),
+		Stride:    300 * 3 * SizeofKind(reflect.Uint16),
 	}
 
-	q, _ := ximage.AsMemPImage(p)
+	q, _ := AsMemPImage(p)
 	_ = q
 }
