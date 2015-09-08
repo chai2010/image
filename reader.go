@@ -79,3 +79,17 @@ func LoadImage(filename string) (m *MemPImage, format string, err error) {
 	}
 	return m, format, nil
 }
+
+func LoadImageEx(filename string, loader Loader) (m *MemPImage, format string, err error) {
+	if loader != nil {
+		x, format, err := loader(filename)
+		if err != nil {
+			return nil, "", err
+		}
+		if m, _ = AsMemPImage(x); m == nil {
+			m = NewMemPImageFrom(x)
+		}
+		return m, format, nil
+	}
+	return LoadImage(filename)
+}
