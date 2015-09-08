@@ -10,6 +10,9 @@ import (
 	"os"
 )
 
+type LoadConfiger func(filename string) (cfg image.Config, format string, err error)
+type Loader func(filename string) (m image.Image, format string, err error)
+
 func DecodeConfig(r io.Reader) (cfg image.Config, format string, err error) {
 	return image.DecodeConfig(r)
 }
@@ -36,6 +39,13 @@ func LoadConfig(filename string) (cfg image.Config, format string, err error) {
 	return DecodeConfig(f)
 }
 
+func LoadConfigEx(filename string, loader LoadConfiger) (cfg image.Config, format string, err error) {
+	if loader != nil {
+		return loader(filename)
+	}
+	return LoadConfig(filename)
+}
+
 func Load(filename string) (m image.Image, format string, err error) {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -43,6 +53,13 @@ func Load(filename string) (m image.Image, format string, err error) {
 	}
 	defer f.Close()
 	return Decode(f)
+}
+
+func LoadEx(filename string, loader Loader) (m image.Image, format string, err error) {
+	if loader != nil {
+		return loader(filename)
+	}
+	return Load(filename)
 }
 
 func LoadImage(filename string) (m *MemPImage, format string, err error) {
