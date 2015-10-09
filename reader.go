@@ -41,7 +41,14 @@ func LoadConfig(filename string) (cfg image.Config, format string, err error) {
 
 func LoadConfigEx(filename string, loader LoadConfiger) (cfg image.Config, format string, err error) {
 	if loader != nil {
-		return loader(filename)
+		cfg, format, err = loader(filename)
+		if err != nil {
+			var err1 error
+			if cfg, format, err1 = LoadConfig(filename); err1 != nil {
+				return image.Config{}, "", err // retuen loader's err
+			}
+		}
+		return
 	}
 	return LoadConfig(filename)
 }
@@ -57,7 +64,14 @@ func Load(filename string) (m image.Image, format string, err error) {
 
 func LoadEx(filename string, loader Loader) (m image.Image, format string, err error) {
 	if loader != nil {
-		return loader(filename)
+		m, format, err = loader(filename)
+		if err != nil {
+			var err1 error
+			if m, format, err1 = Load(filename); err1 != nil {
+				return nil, "", err // retuen loader's err
+			}
+		}
+		return
 	}
 	return Load(filename)
 }
