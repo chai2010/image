@@ -412,6 +412,9 @@ type SizeofImager interface {
 }
 
 func SizeofImage(m image.Image) int {
+	if m == nil {
+		return 0
+	}
 	if m, ok := m.(SizeofImager); ok {
 		return m.SizeofImage()
 	}
