@@ -6,8 +6,14 @@
 package big
 
 import (
+	"errors"
 	"image"
 	"reflect"
+)
+
+var (
+	ErrNoOverviews        = errors.New("image/big: no overviews!")
+	ErrNoOverviewsFeature = errors.New("image/big: no overviews feature!")
 )
 
 type Image interface {
