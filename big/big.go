@@ -7,6 +7,7 @@ package big
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"reflect"
 )
@@ -55,7 +56,7 @@ var (
 )
 
 func MultiImageReader(readers map[image.Rectangle]ImageReader) ImageReader {
-	return &_MultiImageReader{Readers: readers}
+	return newMultiImageReader(readers)
 }
 
 func MultiOverviewImageReader(readers []map[image.Rectangle]ImageReader) ImageReader {
@@ -114,4 +115,24 @@ func RegisterImageWriter(driverName string,
 			Create: create,
 		},
 	)
+}
+
+func assert(condition bool, a ...interface{}) {
+	if !condition {
+		if msg := fmt.Sprint(a...); msg != "" {
+			panic(fmt.Sprintf("Assert failed, %s", msg))
+		} else {
+			panic(fmt.Sprintf("Assert failed"))
+		}
+	}
+}
+
+func assertf(condition bool, format string, a ...interface{}) {
+	if !condition {
+		if msg := fmt.Sprintf(format, a...); msg != "" {
+			panic(fmt.Sprintf("Assert failed, %s", msg))
+		} else {
+			panic(fmt.Sprintf("Assert failed"))
+		}
+	}
 }
