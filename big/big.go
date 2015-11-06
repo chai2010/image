@@ -60,7 +60,7 @@ func MultiImageReader(readers map[image.Rectangle]ImageReader) ImageReader {
 }
 
 func MultiOverviewImageReader(readers []map[image.Rectangle]ImageReader) ImageReader {
-	return &_MultiOverviewImageReader{Readers: readers}
+	return newMultiOverviewImageReader(readers)
 }
 
 func OpenImageReader(filename string) (r ImageReader, err error) {
