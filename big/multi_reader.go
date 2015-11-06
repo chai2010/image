@@ -5,6 +5,7 @@
 package big
 
 import (
+	"errors"
 	"image"
 	"reflect"
 
@@ -24,17 +25,21 @@ type _MultiImageReader struct {
 }
 
 func newMultiImageReader(readers map[image.Rectangle]ImageReader) *_MultiImageReader {
-	assert(len(readers) > 0)
+	if len(readers) == 0 {
+		return &_MultiImageReader{}
+	}
 
 	p := &_MultiImageReader{
 		rect:    image.Rect(0, 0, 1, 1),
 		readers: make(map[image.Rectangle]ImageReader),
 	}
 	for b, r := range readers {
-		assertf(!b.Empty(), "b = %v", b)
-		assertf(b.Min.X >= 0, "b = %v", b)
-		assertf(b.Min.Y >= 0, "b = %v", b)
-		assertf(r != nil, "b = %v", b)
+		if r == nil || b.Empty() || b.Min.X < 0 || b.Min.Y < 0 {
+			return &_MultiImageReader{}
+		}
+		if _, ok := p.readers[b]; ok {
+			continue // skip
+		}
 
 		p.readers[b] = r
 		p.rect = p.rect.Union(b)
@@ -71,6 +76,9 @@ func (p *_MultiImageReader) DataType() reflect.Kind {
 }
 
 func (p *_MultiImageReader) HasOverviews() bool {
+	if len(p.readers) == 0 {
+		return false
+	}
 	if len(p.readers) > 1 {
 		return false
 	}
@@ -80,6 +88,9 @@ func (p *_MultiImageReader) HasOverviews() bool {
 	return false
 }
 func (p *_MultiImageReader) HasOverviewsFeature() bool {
+	if len(p.readers) == 0 {
+		return false
+	}
 	if len(p.readers) > 1 {
 		return false
 	}
@@ -89,6 +100,9 @@ func (p *_MultiImageReader) HasOverviewsFeature() bool {
 	return false
 }
 func (p *_MultiImageReader) BuildOverviews() error {
+	if len(p.readers) == 0 {
+		return errors.New("image/big: _MultiImageReader.BuildOverviews, no reader!")
+	}
 	if len(p.readers) > 1 {
 		return ErrNoOverviewsFeature
 	}
@@ -98,6 +112,9 @@ func (p *_MultiImageReader) BuildOverviews() error {
 	return ErrNoOverviewsFeature
 }
 func (p *_MultiImageReader) BuildOverviewsIfNotExists() error {
+	if len(p.readers) == 0 {
+		return errors.New("image/big: _MultiImageReader.BuildOverviewsIfNotExists, no reader!")
+	}
 	if len(p.readers) > 1 {
 		return ErrNoOverviewsFeature
 	}
@@ -107,8 +124,12 @@ func (p *_MultiImageReader) BuildOverviewsIfNotExists() error {
 	return ErrNoOverviewsFeature
 }
 func (p *_MultiImageReader) Read(rect image.Rectangle) (m image.Image, err error) {
-	rect = rect.Intersect(p.rect)
-	assert(!rect.Empty())
+	if len(p.readers) == 0 {
+		return nil, errors.New("image/big: _MultiImageReader.Read, no reader!")
+	}
+	if rect.Empty() {
+		return nil, errors.New("image/big: _MultiImageReader.Read, empty rect!")
+	}
 
 	// only on image, start at (0,0)
 	if len(p.readers) == 1 && p.rect.Min == image.Pt(0, 0) {
@@ -149,10 +170,15 @@ func (p *_MultiImageReader) Read(rect image.Rectangle) (m image.Image, err error
 	return
 }
 func (p *_MultiImageReader) ReadOverview(idxOverview int, rect image.Rectangle) (m image.Image, err error) {
-	assert(idxOverview >= 0)
-
-	rect = rect.Intersect(p.rect)
-	assert(!rect.Empty())
+	if len(p.readers) == 0 {
+		return nil, errors.New("image/big: _MultiImageReader.ReadOverview, no reader!")
+	}
+	if idxOverview < 0 {
+		return nil, errors.New("image/big: _MultiImageReader.ReadOverview, invalid idxOverview!")
+	}
+	if rect.Empty() {
+		return nil, errors.New("image/big: _MultiImageReader.ReadOverview, empty rect!")
+	}
 
 	if idxOverview == 0 {
 		return p.Read(rect)
