@@ -156,7 +156,7 @@ func (p *_MultiImageReader) Read(rect image.Rectangle) (m image.Image, err error
 		r := p.readers[rectList[i]]
 		b := rect.Intersect(rectList[i])
 
-		// read sun image
+		// read sub image
 		sub, err := r.Read(b.Sub(rectList[i].Min))
 		if err != nil {
 			return nil, err
