@@ -66,7 +66,7 @@ func (w *pngWriter) encode(c *Code) []byte {
 	return w.buf.Bytes()
 }
 
-var comment = []byte("Software\x00QR-PNG http://godoc.org/github.com/chai2010/gopkg/image/qrcode")
+var comment = []byte("Software\x00QR-PNG <chaishushan{AT}gmail.com>")
 
 func (w *pngWriter) writeChunk(name string, data []byte) {
 	if w.crc == nil {
