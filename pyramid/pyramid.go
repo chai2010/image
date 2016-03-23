@@ -30,13 +30,13 @@ type PyramidDriver interface {
 
 func NewPyramid(imageSize image.Point, tileSize image.Point, driver PyramidDriver) *Pyramid {
 	if v := imageSize; v.X <= 0 || v.Y <= 0 {
-		panic(fmt.Errorf("image/pyramid: NewImage, imageSize = %v", imageSize))
+		panic(fmt.Errorf("image/pyramid: NewPyramid, imageSize = %v", imageSize))
 	}
 	if v := tileSize; v.X <= 0 || v.Y <= 0 {
-		panic(fmt.Errorf("image/pyramid: NewImage, tileSize = %v", tileSize))
+		panic(fmt.Errorf("image/pyramid: NewPyramid, tileSize = %v", tileSize))
 	}
 	if driver == nil {
-		panic(fmt.Errorf("image/pyramid: NewImage, driver = <nil>"))
+		panic(fmt.Errorf("image/pyramid: NewPyramid, driver = <nil>"))
 	}
 
 	p := &Pyramid{
@@ -246,11 +246,18 @@ func (p *Pyramid) readRectFromTile(dst, tile draw.Image, r image.Rectangle, col,
 }
 
 func (p *Pyramid) WriteRect(m image.Image, r image.Rectangle, level int) (err error) {
+	return p.writeRect(m, r, level, 32) // update all levels
+}
+
+func (p *Pyramid) writeRect(
+	m image.Image, r image.Rectangle,
+	level, updateLevelsLimit int,
+) (err error) {
 	level = p.adjustLevel(level)
 	r = r.Intersect(p.Bounds())
 
 	if level >= len(p.ImageSize) || level < -len(p.ImageSize) {
-		err = fmt.Errorf("image/pyramid: Image.WriteRect, level = %v", level)
+		err = fmt.Errorf("image/pyramid: Image.writeRect, level = %v", level)
 		return
 	}
 	if r.Empty() {
@@ -281,7 +288,7 @@ func (p *Pyramid) WriteRect(m image.Image, r image.Rectangle, level int) (err er
 	}
 	wg.Wait()
 
-	p.updateRectPyramid(level, r.Min.X, r.Min.Y, r.Dx(), r.Dy())
+	p.updateRectPyramid(level, r.Min.X, r.Min.Y, r.Dx(), r.Dy(), updateLevelsLimit)
 	return
 }
 
@@ -320,8 +327,8 @@ func (p *Pyramid) writeRectToTile(tile draw.Image, src image.Image, r image.Rect
 	return
 }
 
-func (p *Pyramid) updateRectPyramid(level, x, y, dx, dy int) {
-	for level > 0 && dx > 0 && dy > 0 {
+func (p *Pyramid) updateRectPyramid(level, x, y, dx, dy, updateLevelsLimit int) {
+	for cnt := 0; cnt < updateLevelsLimit && level > 0 && dx > 0 && dy > 0; cnt++ {
 		minX, minY := x, y
 		maxX, maxY := x+dx, y+dy
 
@@ -338,10 +345,13 @@ func (p *Pyramid) updateRectPyramid(level, x, y, dx, dy int) {
 		}
 
 		var wg sync.WaitGroup
+		var workLimits = make(chan struct{}, 32)
 		for row := tMinRow; row < tMaxRow; row++ {
 			for col := tMinCol; col < tMaxCol; col++ {
 				wg.Add(1)
 				go func(level, col, row int) {
+					workLimits <- struct{}{}
+					defer func() { <-workLimits }()
 					p.updateParentTile(level, col, row)
 					wg.Done()
 				}(level, col, row)
@@ -453,4 +463,32 @@ func (p *Pyramid) SelectTileList(level int, r image.Rectangle) (
 		level--
 	}
 	return
+}
+
+func (p *Pyramid) UpdatePyramid() (err error) {
+	defer func() {
+		if x := recover(); x != nil {
+			if errx, ok := x.(error); ok {
+				err = errx
+				return
+			} else {
+				err = fmt.Errorf("image/pyramid: Pyramid.UpdatePyramid, %v", x)
+				return
+			}
+		}
+	}()
+
+	var (
+		stepX     = p.TileSize.X * 16
+		stepY     = p.TileSize.Y * 16
+		stepLevel = 3 // 16x16 => 4x4 => 1x1
+	)
+	for level := p.Levels() - 1; level > 0; level -= stepLevel {
+		for x := 0; x < p.ImageSize[level].X; x += stepX {
+			for y := 0; y < p.ImageSize[level].Y; y += stepY {
+				p.updateRectPyramid(level, x, y, stepX, stepY, stepLevel)
+			}
+		}
+	}
+	return nil
 }
