@@ -11,9 +11,9 @@ import (
 	"reflect"
 )
 
-func ExamplePixSilce() {
+func ExamplePixSlice() {
 	a := []int32{101, 102, 103}
-	b := AsPixSilce(a)
+	b := AsPixSlice(a)
 
 	b.Int32s()[0] = 12345
 	b.SetValue(1, reflect.Int32, 1002)
@@ -25,7 +25,7 @@ func ExamplePixSilce() {
 	// b.Int32s() = [12345 1002 1003]
 }
 
-func ExamplePixSilce_SwapEndian() {
+func ExamplePixSlice_SwapEndian() {
 	rgba64 := image.NewRGBA64(image.Rect(0, 0, 1, 1))
 	rgba64.SetRGBA64(0, 0, color.RGBA64{
 		R: 0x0102,
@@ -37,7 +37,7 @@ func ExamplePixSilce_SwapEndian() {
 	// pix is big-endian format
 	fmt.Printf("big-endian: %v\n", rgba64.Pix)
 
-	AsPixSilce(rgba64.Pix).SwapEndian(reflect.Uint16)
+	AsPixSlice(rgba64.Pix).SwapEndian(reflect.Uint16)
 	fmt.Printf("little-endian: %v\n", rgba64.Pix)
 
 	// Output:
@@ -61,7 +61,7 @@ func ExampleColor_uint16() {
 	c := MemPColor{
 		Channels: 4,
 		DataType: reflect.Uint16,
-		Pix:      AsPixSilce([]uint16{11101, 11102, 11103, 11104}),
+		Pix:      AsPixSlice([]uint16{11101, 11102, 11103, 11104}),
 	}
 	rgba64 := color.RGBA64Model.Convert(c).(color.RGBA64)
 	fmt.Printf("rgba64 = %v\n", rgba64)
@@ -120,7 +120,7 @@ func ExampleImage_rgb() {
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
-			rgbSlice []RGB  = PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = PixSlice(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
@@ -144,7 +144,7 @@ func ExampleImage_rgb48() {
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		var (
 			line     []byte = rgbImage.XPix[rgbImage.PixOffset(b.Min.X, y):][:rgbImage.XStride]
-			rgbSlice []RGB  = PixSilce(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
+			rgbSlice []RGB  = PixSlice(line).Slice(reflect.TypeOf([]RGB(nil))).([]RGB)
 		)
 
 		for i, _ := range rgbSlice {
