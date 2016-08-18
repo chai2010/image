@@ -35,7 +35,7 @@ import (
 	_ "github.com/chai2010/image/draw"
 	_ "github.com/chai2010/image/pyramid"
 	_ "github.com/chai2010/rawp"
-	_ "github.com/chai2010/rdb"
+	//_ "github.com/chai2010/rdb"
 	_ "github.com/chai2010/webp"
 )
 
