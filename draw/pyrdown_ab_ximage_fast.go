@@ -72,11 +72,11 @@ func abPyrDown_xImage_int8(dst *ximage.MemPImage, r image.Rectangle, src *ximage
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := int16(srcLine0[j+0])
-				v01 := int16(srcLine0[j+1])
-				v10 := int16(srcLine1[j+0])
-				v11 := int16(srcLine1[j+1])
-				dstLineX[i] = int8((v00 + v01 + v10 + v11) / 4)
+				v00 := int16(srcLine0[j+0*src.XChannels+k])
+				v01 := int16(srcLine0[j+1*src.XChannels+k])
+				v10 := int16(srcLine1[j+0*src.XChannels+k])
+				v11 := int16(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = int8((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -98,11 +98,11 @@ func abPyrDown_xImage_int16(dst *ximage.MemPImage, r image.Rectangle, src *ximag
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := int32(srcLine0[j+0])
-				v01 := int32(srcLine0[j+1])
-				v10 := int32(srcLine1[j+0])
-				v11 := int32(srcLine1[j+1])
-				dstLineX[i] = int16((v00 + v01 + v10 + v11) / 4)
+				v00 := int32(srcLine0[j+0*src.XChannels+k])
+				v01 := int32(srcLine0[j+1*src.XChannels+k])
+				v10 := int32(srcLine1[j+0*src.XChannels+k])
+				v11 := int32(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = int16((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -124,11 +124,11 @@ func abPyrDown_xImage_int32(dst *ximage.MemPImage, r image.Rectangle, src *ximag
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := int64(srcLine0[j+0])
-				v01 := int64(srcLine0[j+1])
-				v10 := int64(srcLine1[j+0])
-				v11 := int64(srcLine1[j+1])
-				dstLineX[i] = int32((v00 + v01 + v10 + v11) / 4)
+				v00 := int64(srcLine0[j+0*src.XChannels+k])
+				v01 := int64(srcLine0[j+1*src.XChannels+k])
+				v10 := int64(srcLine1[j+0*src.XChannels+k])
+				v11 := int64(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = int32((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -150,11 +150,11 @@ func abPyrDown_xImage_int64(dst *ximage.MemPImage, r image.Rectangle, src *ximag
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := int64(srcLine0[j+0])
-				v01 := int64(srcLine0[j+1])
-				v10 := int64(srcLine1[j+0])
-				v11 := int64(srcLine1[j+1])
-				dstLineX[i] = int64((v00 + v01 + v10 + v11) / 4)
+				v00 := int64(srcLine0[j+0*src.XChannels+k])
+				v01 := int64(srcLine0[j+1*src.XChannels+k])
+				v10 := int64(srcLine1[j+0*src.XChannels+k])
+				v11 := int64(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = int64((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -176,11 +176,11 @@ func abPyrDown_xImage_uint8(dst *ximage.MemPImage, r image.Rectangle, src *ximag
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := uint16(srcLine0[j+0])
-				v01 := uint16(srcLine0[j+1])
-				v10 := uint16(srcLine1[j+0])
-				v11 := uint16(srcLine1[j+1])
-				dstLineX[i] = uint8((v00 + v01 + v10 + v11) / 4)
+				v00 := uint16(srcLine0[j+0*src.XChannels+k])
+				v01 := uint16(srcLine0[j+1*src.XChannels+k])
+				v10 := uint16(srcLine1[j+0*src.XChannels+k])
+				v11 := uint16(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = uint8((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -202,11 +202,11 @@ func abPyrDown_xImage_uint16(dst *ximage.MemPImage, r image.Rectangle, src *xima
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := uint32(srcLine0[j+0])
-				v01 := uint32(srcLine0[j+1])
-				v10 := uint32(srcLine1[j+0])
-				v11 := uint32(srcLine1[j+1])
-				dstLineX[i] = uint16((v00 + v01 + v10 + v11) / 4)
+				v00 := uint32(srcLine0[j+0*src.XChannels+k])
+				v01 := uint32(srcLine0[j+1*src.XChannels+k])
+				v10 := uint32(srcLine1[j+0*src.XChannels+k])
+				v11 := uint32(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = uint16((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -228,11 +228,11 @@ func abPyrDown_xImage_uint32(dst *ximage.MemPImage, r image.Rectangle, src *xima
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := uint64(srcLine0[j+0])
-				v01 := uint64(srcLine0[j+1])
-				v10 := uint64(srcLine1[j+0])
-				v11 := uint64(srcLine1[j+1])
-				dstLineX[i] = uint32((v00 + v01 + v10 + v11) / 4)
+				v00 := uint64(srcLine0[j+0*src.XChannels+k])
+				v01 := uint64(srcLine0[j+1*src.XChannels+k])
+				v10 := uint64(srcLine1[j+0*src.XChannels+k])
+				v11 := uint64(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = uint32((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -254,11 +254,11 @@ func abPyrDown_xImage_uint64(dst *ximage.MemPImage, r image.Rectangle, src *xima
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := uint64(srcLine0[j+0])
-				v01 := uint64(srcLine0[j+1])
-				v10 := uint64(srcLine1[j+0])
-				v11 := uint64(srcLine1[j+1])
-				dstLineX[i] = uint64((v00 + v01 + v10 + v11) / 4)
+				v00 := uint64(srcLine0[j+0*src.XChannels+k])
+				v01 := uint64(srcLine0[j+1*src.XChannels+k])
+				v10 := uint64(srcLine1[j+0*src.XChannels+k])
+				v11 := uint64(srcLine1[j+1*src.XChannels+k])
+				dstLineX[i+k] = uint64((v00 + v01 + v10 + v11) / 4)
 			}
 		}
 
@@ -280,10 +280,10 @@ func abPyrDown_xImage_float32(dst *ximage.MemPImage, r image.Rectangle, src *xim
 			srcLine1 := src.XPix[off1:][:r.Dx()*4*dst.XChannels*2].Float32s()
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+1, j+2 {
-				v00 := float32(srcLine0[j+0])
-				v01 := float32(srcLine0[j+1])
-				v10 := float32(srcLine1[j+0])
-				v11 := float32(srcLine1[j+1])
+				v00 := float32(srcLine0[j+0*src.XChannels])
+				v01 := float32(srcLine0[j+1*src.XChannels])
+				v10 := float32(srcLine1[j+0*src.XChannels])
+				v11 := float32(srcLine1[j+1*src.XChannels])
 				dstLineX[i] = float32((v00 + v01 + v10 + v11) / 4)
 			}
 
@@ -299,11 +299,11 @@ func abPyrDown_xImage_float32(dst *ximage.MemPImage, r image.Rectangle, src *xim
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 				for k := 0; k < dst.XChannels; k++ {
-					v00 := float32(srcLine0[j+0])
-					v01 := float32(srcLine0[j+1])
-					v10 := float32(srcLine1[j+0])
-					v11 := float32(srcLine1[j+1])
-					dstLineX[i] = float32((v00 + v01 + v10 + v11) / 4)
+					v00 := float32(srcLine0[j+0*src.XChannels+k])
+					v01 := float32(srcLine0[j+1*src.XChannels+k])
+					v10 := float32(srcLine1[j+0*src.XChannels+k])
+					v11 := float32(srcLine1[j+1*src.XChannels+k])
+					dstLineX[i+k] = float32((v00 + v01 + v10 + v11) / 4)
 				}
 			}
 
@@ -326,10 +326,10 @@ func abPyrDown_xImage_float64(dst *ximage.MemPImage, r image.Rectangle, src *xim
 			srcLine1 := src.XPix[off1:][:r.Dx()*8*dst.XChannels*2].Float64s()
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+1, j+2 {
-				v00 := float64(srcLine0[j+0])
-				v01 := float64(srcLine0[j+1])
-				v10 := float64(srcLine1[j+0])
-				v11 := float64(srcLine1[j+1])
+				v00 := float64(srcLine0[j+0*src.XChannels])
+				v01 := float64(srcLine0[j+1*src.XChannels])
+				v10 := float64(srcLine1[j+0*src.XChannels])
+				v11 := float64(srcLine1[j+1*src.XChannels])
 				dstLineX[i] = float64((v00 + v01 + v10 + v11) / 4)
 			}
 
@@ -345,11 +345,11 @@ func abPyrDown_xImage_float64(dst *ximage.MemPImage, r image.Rectangle, src *xim
 
 			for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 				for k := 0; k < dst.XChannels; k++ {
-					v00 := float64(srcLine0[j+0])
-					v01 := float64(srcLine0[j+1])
-					v10 := float64(srcLine1[j+0])
-					v11 := float64(srcLine1[j+1])
-					dstLineX[i] = float64((v00 + v01 + v10 + v11) / 4)
+					v00 := float64(srcLine0[j+0*src.XChannels+k])
+					v01 := float64(srcLine0[j+1*src.XChannels+k])
+					v10 := float64(srcLine1[j+0*src.XChannels+k])
+					v11 := float64(srcLine1[j+1*src.XChannels+k])
+					dstLineX[i+k] = float64((v00 + v01 + v10 + v11) / 4)
 				}
 			}
 
@@ -372,11 +372,11 @@ func abPyrDown_xImage_complex64(dst *ximage.MemPImage, r image.Rectangle, src *x
 
 		for i, j := 0, 0; i < len(dstLineX); i, j = i+dst.XChannels*1, j+dst.XChannels*2 {
 			for k := 0; k < dst.XChannels; k++ {
-				v00 := srcLine0[j+0]
-				v01 := srcLine0[j+1]
-				v10 := srcLine1[j+0]
-				v11 := srcLine1[j+1]
-				dstLineX[i] = (v00 + v01 + v10 + v11) / 4
+				v00 := srcLine0[j+0*src.XChannels+k]
+				v01 := srcLine0[j+1*src.XChannels+k]
+				v10 := srcLine1[j+0*src.XChannels+k]
+				v11 := srcLine1[j+1*src.XChannels+k]
+				dstLineX[i+k] = (v00 + v01 + v10 + v11) / 4
 			}
 		}
 
