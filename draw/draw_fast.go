@@ -108,7 +108,7 @@ func drawFast(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point
 func drawGray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.Pix[off0:][:r.Dx()*1*1]
 		srcLine := src.Pix[off1:][:r.Dx()*1*1]
@@ -120,7 +120,7 @@ func drawGray_Gray(dst *image.Gray, r image.Rectangle, src *image.Gray, sp image
 func drawGray_Gray16(dst *image.Gray, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0] = src.Pix[off1]
@@ -133,7 +133,7 @@ func drawGray_Gray16(dst *image.Gray, r image.Rectangle, src *image.Gray16, sp i
 func drawGray_RGBA(dst *image.Gray, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			rxx := uint32(src.Pix[off1+0]) * 0x101
@@ -150,7 +150,7 @@ func drawGray_RGBA(dst *image.Gray, r image.Rectangle, src *image.RGBA, sp image
 func drawGray_RGBA64(dst *image.Gray, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			rxx, gxx, bxx, _ := src.RGBA64At(x, y).RGBA()
@@ -164,7 +164,7 @@ func drawGray_RGBA64(dst *image.Gray, r image.Rectangle, src *image.RGBA64, sp i
 func drawGray_YCbCr(dst *image.Gray, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.YOffset(sp.X, y)
+		off1 := src.YOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0] = src.Y[off1]
@@ -177,7 +177,7 @@ func drawGray_YCbCr(dst *image.Gray, r image.Rectangle, src *image.YCbCr, sp ima
 func drawGray16_Gray16(dst *image.Gray16, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.Pix[off0:][:r.Dx()*2*1]
 		srcLine := src.Pix[off1:][:r.Dx()*2*1]
@@ -189,7 +189,7 @@ func drawGray16_Gray16(dst *image.Gray16, r image.Rectangle, src *image.Gray16, 
 func drawGray16_Gray(dst *image.Gray16, r image.Rectangle, src *image.Gray, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1]
@@ -203,7 +203,7 @@ func drawGray16_Gray(dst *image.Gray16, r image.Rectangle, src *image.Gray, sp i
 func drawGray16_YCbCr(dst *image.Gray16, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.YOffset(sp.X, y)
+		off1 := src.YOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Y[off1]
@@ -217,7 +217,7 @@ func drawGray16_YCbCr(dst *image.Gray16, r image.Rectangle, src *image.YCbCr, sp
 func drawRGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.XPix[off0:][:r.Dx()*1*3]
 		srcLine := src.XPix[off1:][:r.Dx()*1*3]
@@ -229,7 +229,7 @@ func drawRGB_RGB(dst *ximage.RGBImage, r image.Rectangle, src *ximage.RGBImage, 
 func drawRGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB48Image, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.XPix[off0:][:r.Dx()*2*3]
 		srcLine := src.XPix[off1:][:r.Dx()*2*3]
@@ -241,7 +241,7 @@ func drawRGB48_RGB48(dst *ximage.RGB48Image, r image.Rectangle, src *ximage.RGB4
 func drawRGBA_RGBA(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.Pix[off0:][:r.Dx()*1*4]
 		srcLine := src.Pix[off1:][:r.Dx()*1*4]
@@ -253,7 +253,7 @@ func drawRGBA_RGBA(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image
 func drawRGBA_RGBA64(dst *image.RGBA, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1+0*2]
@@ -269,7 +269,7 @@ func drawRGBA_RGBA64(dst *image.RGBA, r image.Rectangle, src *image.RGBA64, sp i
 func drawRGBA_Gray(dst *image.RGBA, r image.Rectangle, src *image.Gray, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1]
@@ -285,7 +285,7 @@ func drawRGBA_Gray(dst *image.RGBA, r image.Rectangle, src *image.Gray, sp image
 func drawRGBA_Gray16(dst *image.RGBA, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1]
@@ -316,7 +316,7 @@ func drawRGBA_YCbCr(dst *image.RGBA, r image.Rectangle, src *image.YCbCr, sp ima
 func drawRGBA64_RGBA64(dst *image.RGBA64, r image.Rectangle, src *image.RGBA64, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.Pix[off0:][:r.Dx()*2*4]
 		srcLine := src.Pix[off1:][:r.Dx()*2*4]
@@ -328,7 +328,7 @@ func drawRGBA64_RGBA64(dst *image.RGBA64, r image.Rectangle, src *image.RGBA64, 
 func drawRGBA64_RGBA(dst *image.RGBA64, r image.Rectangle, src *image.RGBA, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1+0]
@@ -348,7 +348,7 @@ func drawRGBA64_RGBA(dst *image.RGBA64, r image.Rectangle, src *image.RGBA, sp i
 func drawRGBA64_Gray(dst *image.RGBA64, r image.Rectangle, src *image.Gray, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1]
@@ -368,7 +368,7 @@ func drawRGBA64_Gray(dst *image.RGBA64, r image.Rectangle, src *image.Gray, sp i
 func drawRGBA64_Gray16(dst *image.RGBA64, r image.Rectangle, src *image.Gray16, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Pix[off1]
@@ -388,7 +388,7 @@ func drawRGBA64_Gray16(dst *image.RGBA64, r image.Rectangle, src *image.Gray16, 
 func drawRGBA64_YCbCr(dst *image.RGBA64, r image.Rectangle, src *image.YCbCr, sp image.Point) {
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.YOffset(sp.X, y)
+		off1 := src.YOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		for x := r.Min.X; x < r.Max.X; x++ {
 			dst.Pix[off0+0] = src.Y[off1]
@@ -414,7 +414,7 @@ func drawImage(dst *ximage.MemPImage, r image.Rectangle, src *ximage.MemPImage, 
 	dxSize := ximage.SizeofPixel(dst.XChannels, dst.XDataType) * r.Dx()
 	for y := r.Min.Y; y < r.Max.Y; y++ {
 		off0 := dst.PixOffset(r.Min.X, y)
-		off1 := src.PixOffset(sp.X, y)
+		off1 := src.PixOffset(sp.X, sp.Y+y-r.Min.Y)
 
 		dstLine := dst.XPix[off0:][:dxSize]
 		srcLine := src.XPix[off1:][:dxSize]
