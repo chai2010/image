@@ -111,10 +111,20 @@ func (c MemPColor) RGBA() (r, g, b, a uint32) {
 	return
 }
 
+type ColorModelT struct {
+	Channels int
+	DataType reflect.Kind
+}
+
+func (m ColorModelT) Convert(c color.Color) color.Color {
+	return colorModelConvert(m.Channels, m.DataType, c)
+}
+
 func ColorModel(channels int, dataType reflect.Kind) color.Model {
-	return color.ModelFunc(func(c color.Color) color.Color {
-		return colorModelConvert(channels, dataType, c)
-	})
+	return ColorModelT{
+		Channels: channels,
+		DataType:dataType,
+	}
 }
 
 func colorModelConvert(channels int, dataType reflect.Kind, c color.Color) color.Color {

@@ -12,7 +12,7 @@ import (
 	"log"
 	"os"
 
-	ximage "."
+	ximage "github.com/chai2010/image"
 )
 
 func ExampleEncode_default() {

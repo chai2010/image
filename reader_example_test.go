@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	ximage "."
+	ximage "github.com/chai2010/image"
 )
 
 func ExampleLoad() {
