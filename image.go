@@ -366,44 +366,151 @@ func (p *MemPImage) StdImage() image.Image {
 	return p
 }
 
-func ChannelsOf(m image.Image) int {
+func ChannelsOf(m interface{}) int {
+	if m, ok := m.(ColorModelInterface); ok {
+		return m.Channels()
+	}
+	if m, ok := m.(*MemPImage); ok {
+		return m.XChannels
+	}
+	if m, ok := m.(MemP); ok {
+		return m.Channels()
+	}
 	if m, ok := AsMemPImage(m); ok {
 		return m.XChannels
 	}
-	switch m.(type) {
-	case *image.Gray:
-		return 1
-	case *image.Gray16:
-		return 1
-	case *image.YCbCr:
-		return 3
+	if m, ok := m.(image.Image); ok {
+		switch m.(type) {
+		case *image.Gray:
+			return 1
+		case *image.Gray16:
+			return 1
+		case *image.YCbCr:
+			return 3
+		case *image.Paletted:
+			return 1
+		}
+	}
+	if m, ok := m.(color.Model); ok {
+		switch m {
+		case color.RGBAModel:
+			return 4
+		case color.RGBA64Model:
+			return 4
+		case color.NRGBAModel:
+			return 4
+		case color.NRGBA64Model:
+			return 4
+		case color.GrayModel:
+			return 1
+		case color.Gray16Model:
+			return 1
+		}
 	}
 	return 4
 }
 
-func DepthOf(m image.Image) int {
+func DataTypeOf(m interface{}) reflect.Kind {
+	if m, ok := m.(ColorModelInterface); ok {
+		return m.DataType()
+	}
+	if m, ok := m.(*MemPImage); ok {
+		return m.XDataType
+	}
+	if m, ok := m.(MemP); ok {
+		return m.DataType()
+	}
+	if m, ok := AsMemPImage(m); ok {
+		return m.DataType()
+	}
+	if m, ok := m.(image.Image); ok {
+		switch m.(type) {
+		case *image.Gray:
+			return reflect.Uint8
+		case *image.Gray16:
+			return reflect.Uint16
+		case *image.NRGBA:
+			return reflect.Uint8
+		case *image.NRGBA64:
+			return reflect.Uint16
+		case *image.RGBA:
+			return reflect.Uint8
+		case *image.RGBA64:
+			return reflect.Uint16
+		case *image.YCbCr:
+			return reflect.Uint8
+		case *image.Paletted:
+			return reflect.Uint8
+		}
+	}
+	if m, ok := m.(color.Model); ok {
+		switch m {
+		case color.RGBAModel:
+			return reflect.Uint8
+		case color.RGBA64Model:
+			return reflect.Uint16
+		case color.NRGBAModel:
+			return reflect.Uint8
+		case color.NRGBA64Model:
+			return reflect.Uint16
+		case color.GrayModel:
+			return reflect.Uint8
+		case color.Gray16Model:
+			return reflect.Uint16
+		case color.YCbCrModel:
+			return reflect.Uint8
+		}
+	}
+	return reflect.Uint8
+}
+
+func DepthOf(m interface{}) int {
+	if m, ok := m.(ColorModelInterface); ok {
+		return SizeofKind(m.DataType()) * 8
+	}
 	if m, ok := m.(*MemPImage); ok {
 		return SizeofKind(m.XDataType) * 8
 	}
 	if m, ok := m.(MemP); ok {
-		return SizeofKind(m.DataType() * 8)
+		return SizeofKind(m.DataType()) * 8
 	}
-	switch m.(type) {
-	case *image.Gray:
-		return 1 * 8
-	case *image.Gray16:
-		return 2 * 8
-	case *image.NRGBA:
-		return 1 * 8
-	case *image.NRGBA64:
-		return 2 * 8
-	case *image.RGBA:
-		return 1 * 8
-	case *image.RGBA64:
-		return 2 * 8
-	case *image.YCbCr:
-		return 1 * 8
+	if m, ok := m.(image.Image); ok {
+		switch m.(type) {
+		case *image.Gray:
+			return 1 * 8
+		case *image.Gray16:
+			return 2 * 8
+		case *image.NRGBA:
+			return 1 * 8
+		case *image.NRGBA64:
+			return 2 * 8
+		case *image.RGBA:
+			return 1 * 8
+		case *image.RGBA64:
+			return 2 * 8
+		case *image.YCbCr:
+			return 1 * 8
+		case *image.Paletted:
+			return 1 * 8
+		}
 	}
+	if m, ok := m.(color.Model); ok {
+		switch m {
+		case color.RGBAModel:
+			return 1 * 8
+		case color.RGBA64Model:
+			return 2 * 8
+		case color.NRGBAModel:
+			return 1 * 8
+		case color.NRGBA64Model:
+			return 2 * 8
+		case color.GrayModel:
+			return 1 * 8
+		case color.Gray16Model:
+			return 2 * 8
+		}
+	}
+
 	return 2 * 8
 }
 
