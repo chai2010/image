@@ -245,6 +245,7 @@ func (p *MemPImage) At(x, y int) color.Color {
 		return MemPColor{
 			Channels: p.XChannels,
 			DataType: p.XDataType,
+			Pix:      make(PixSlice, SizeofPixel(p.XChannels, p.XDataType)),
 		}
 	}
 	i := p.PixOffset(x, y)
@@ -258,7 +259,7 @@ func (p *MemPImage) At(x, y int) color.Color {
 
 func (p *MemPImage) PixelAt(x, y int) []byte {
 	if !(image.Point{x, y}.In(p.XRect)) {
-		return nil
+		return make([]byte, SizeofPixel(p.XChannels, p.XDataType))
 	}
 	i := p.PixOffset(x, y)
 	n := SizeofPixel(p.XChannels, p.XDataType)
