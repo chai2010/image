@@ -1,20 +1,7 @@
-// Copyright 2015 <chaishushan{AT}gmail.com>. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+## Encode QRCode
 
-// +build ingore
-
-package main
-
+```go
 import (
-	"fmt"
-	"image"
-	"image/color"
-	"image/draw"
-	"io/ioutil"
-	"log"
-
-	ximage "github.com/chai2010/image"
 	qr "github.com/chai2010/image/qrencoder"
 )
 
@@ -28,7 +15,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+```
 
+## Show QRCode in terminal
+
+```go
+import (
+	ximage "github.com/chai2010/image"
+	qr "github.com/chai2010/image/qrencoder"
+)
+
+func main() {
 	sqrcode, err := MakeTerminalQrCodeImage("https://github.com/chai2010", qr.L)
 	if err != nil {
 		log.Fatal(err)
@@ -69,3 +67,6 @@ func (c *codeImage) At(x, y int) color.Color {
 	}
 	return color.Gray{0xFF} // whiteColor
 }
+```
+
+![](qrcode-in-terminal.jpg)
